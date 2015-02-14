@@ -1,13 +1,17 @@
 import sys
 
-from gi.repository import Gtk, Gio
+from gi.repository import Gtk, Gio, GtkSource
 
 
 class SBWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
+
         Gtk.Window.__init__(self, title="Simpleblogger", application=app)
+
+        # Build UI
+        scrolled_window = Gtk.ScrolledWindow()
         self.set_border_width(2)
-        self.set_default_size(600, 400)
+        self.set_default_size(700, 550)
 
         header_bar = Gtk.HeaderBar()
         header_bar.set_show_close_button(True)
@@ -37,6 +41,19 @@ class SBWindow(Gtk.ApplicationWindow):
         menumodel.append("Quit", "app.quit")
         popover = Gtk.Popover().new_from_model(menu_button, menumodel)
         menu_button.set_popover(popover)
+
+        # Source view
+        sourceview = GtkSource.View.new()
+        sourceview.set_auto_indent(True)
+        sourceview.set_insert_spaces_instead_of_tabs(True)
+        sourceview.set_indent_width(4)
+        sourceview.set_wrap_mode(Gtk.WrapMode.WORD)
+        lm = GtkSource.LanguageManager.new()
+        buf = sourceview.get_buffer()
+        buf.set_language(lm.get_language("html"))
+        scrolled_window.add(sourceview)
+
+        self.add(scrolled_window)
 
 
 class SBApplication(Gtk.Application):
