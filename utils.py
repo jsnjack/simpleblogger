@@ -15,7 +15,7 @@ def load_config():
     except IOError:
         # Create new empty config file
         with open(os.path.abspath(CONFIG_PATH), 'wb') as config_file:
-            config = {}
+            config = {"blogs": []}
             pickle.dump(config, config_file)
     return config
 
