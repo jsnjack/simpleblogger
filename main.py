@@ -18,8 +18,27 @@ class SBWindow(Gtk.ApplicationWindow):
 
         header_bar = Gtk.HeaderBar()
         header_bar.set_show_close_button(True)
-        header_bar.props.title = "simpleblogger"
-        header_bar.props.subtitle = "http://jsn-techtips.blogspot.com"
+        header_bar.props.hexpand = True
+        header_bar.props.vexpand = True
+        header_bar_box = Gtk.VBox()
+
+        title_entry = Gtk.Entry(placeholder_text=u"New post title")
+        title_entry.connect("focus_in_event", self.on_title_entry_focus_in)
+        title_entry.connect("focus_out_event", self.on_title_entry_focus_out)
+        title_entry.props.xalign = 0.5
+        title_entry.props.hexpand = True
+        title_entry.props.vexpand = True
+        title_entry.props.width_chars = 50
+        title_entry_style = title_entry.get_style_context()
+        title_entry_style.add_class("title")
+        title_entry_style.remove_class("entry")
+
+        subtitle_label = Gtk.Label()
+        subtitle_label.get_style_context().add_class("subtitle")
+
+        header_bar_box.add(title_entry)
+        header_bar_box.add(subtitle_label)
+        header_bar.set_custom_title(header_bar_box)
         self.set_titlebar(header_bar)
 
         post_button = Gtk.Button()
@@ -61,6 +80,18 @@ class SBWindow(Gtk.ApplicationWindow):
         self.add(scrolled_window)
         if app.config["active_blog"]:
             app.activate_blog(app.config["active_blog"])
+
+    def on_title_entry_focus_in(self, target, x):
+        """
+        When focus on title entry make it look like entry
+        """
+        target.get_style_context().add_class("entry")
+
+    def on_title_entry_focus_out(self, target, x):
+        """
+        When moving focus out of title entry make it look like label
+        """
+        target.get_style_context().remove_class("entry")
 
 
 class SBApplication(Gtk.Application):
@@ -162,8 +193,7 @@ class SBApplication(Gtk.Application):
         if blog:
             window = self.get_windows()[0]
             header_bar = window.get_children()[1]
-            header_bar.set_title(blog["name"])
-            header_bar.set_subtitle(blog["link"])
+            header_bar.get_custom_title().get_children()[1].set_text(blog["name"])
 
 
 if __name__ == '__main__':
