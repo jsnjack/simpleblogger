@@ -15,7 +15,10 @@ def load_config():
     except IOError:
         # Create new empty config file
         with open(os.path.abspath(CONFIG_PATH), 'wb') as config_file:
-            config = {"blogs": []}
+            config = {
+                "blogs": [],
+                "active_blog": None
+            }
             pickle.dump(config, config_file)
     return config
 
@@ -27,3 +30,12 @@ def save_config(config):
     with open(os.path.abspath(CONFIG_PATH), 'wb') as config_file:
         pickle.dump(config, config_file)
     return config
+
+
+def get_blog_by_id(config, blog_id):
+    """
+    Find blog by id and return it
+    """
+    for item in config["blogs"]:
+        if item["id"] == blog_id:
+            return item

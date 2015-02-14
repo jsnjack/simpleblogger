@@ -3,7 +3,7 @@ import sys
 from gi.repository import Gtk, Gio, GtkSource
 
 from dialogs.add_account import AddAccountDialog
-from utils import load_config, save_config
+from utils import load_config, save_config, get_blog_by_id
 
 
 class SBWindow(Gtk.ApplicationWindow):
@@ -18,7 +18,8 @@ class SBWindow(Gtk.ApplicationWindow):
 
         header_bar = Gtk.HeaderBar()
         header_bar.set_show_close_button(True)
-        header_bar.props.title = "HeaderBar example"
+        header_bar.props.title = "simpleblogger"
+        header_bar.props.subtitle = "http://jsn-techtips.blogspot.com"
         self.set_titlebar(header_bar)
 
         new_button = Gtk.Button()
@@ -43,6 +44,12 @@ class SBWindow(Gtk.ApplicationWindow):
         menumodel.append("New", "app.new")
         menumodel.append("Add account...", "app.add_account")
         menumodel.append("Quit", "app.quit")
+
+        m2 = Gio.Menu()
+        for item in app.config["blogs"]:
+            m2.append(item["name"], "app.select_blog_%s" % item["id"])
+        menumodel.append_submenu("Blogs", m2)
+
         popover = Gtk.Popover().new_from_model(menu_button, menumodel)
         menu_button.set_popover(popover)
 
@@ -58,9 +65,14 @@ class SBWindow(Gtk.ApplicationWindow):
         scrolled_window.add(sourceview)
 
         self.add(scrolled_window)
+        if app.config["active_blog"]:
+            app.activate_blog(app.config["active_blog"])
 
 
 class SBApplication(Gtk.Application):
+    config = None
+    active_blog = None
+
     def __init__(self):
         Gtk.Application.__init__(self)
 
@@ -70,6 +82,8 @@ class SBApplication(Gtk.Application):
 
     def do_startup(self):
             Gtk.Application.do_startup(self)
+
+            self.config = load_config()
 
             add_account_action = Gio.SimpleAction.new("add_account", None)
             add_account_action.connect("activate", self.add_account_callback)
@@ -83,7 +97,10 @@ class SBApplication(Gtk.Application):
             quit_action.connect("activate", self.quit_callback)
             self.add_action(quit_action)
 
-            self.config = load_config()
+            for item in self.config["blogs"]:
+                select_blog_action = Gio.SimpleAction.new("select_blog_%s" % item["id"], None)
+                select_blog_action.connect("activate", self.select_blog_callback)
+                self.add_action(select_blog_action)
 
     def add_account_callback(self, action, parameter):
         """
@@ -133,6 +150,27 @@ class SBApplication(Gtk.Application):
     def quit_callback(self, action, parameter):
             print("You clicked \"Quit\"")
             self.quit()
+
+    def select_blog_callback(self, action, parameter):
+        """
+        Make selected blog active
+        """
+        blog_id = action.get_name().replace("select_blog_", "")
+        self.activate_blog(blog_id)
+
+    def activate_blog(self, blog_id):
+        """
+        Makes blog active
+        """
+        self.config["active_blog"] = blog_id
+        save_config(self.config)
+        blog = get_blog_by_id(self.config, blog_id)
+        if blog:
+            window = self.get_windows()[0]
+            header_bar = window.get_children()[1]
+            header_bar.set_title(blog["name"])
+            header_bar.set_subtitle(blog["link"])
+
 
 if __name__ == '__main__':
     app = SBApplication()
