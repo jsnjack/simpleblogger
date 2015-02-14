@@ -22,12 +22,6 @@ class SBWindow(Gtk.ApplicationWindow):
         header_bar.props.subtitle = "http://jsn-techtips.blogspot.com"
         self.set_titlebar(header_bar)
 
-        new_button = Gtk.Button()
-        icon = Gio.ThemedIcon(name="document-new-symbolic")
-        image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
-        new_button.add(image)
-        header_bar.pack_start(new_button)
-
         post_button = Gtk.Button()
         icon = Gio.ThemedIcon(name="document-send-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
