@@ -119,6 +119,7 @@ class SBWindow(Gtk.ApplicationWindow):
             service = BloggerProvider(blog["username"], blog["password"])
             tags = self.tag_entry.get_text().split(",")
             tags = [x.strip() for x in tags]
+            tags = [unicode(x, "utf-8") for x in tags]
             # Add new tags to the blog
             new_tags = []
             for tag in tags:
