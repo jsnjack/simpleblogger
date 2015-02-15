@@ -16,6 +16,9 @@ class SBWindow(Gtk.ApplicationWindow):
 
         # Build UI
         scrolled_window = Gtk.ScrolledWindow()
+        main_box = Gtk.VBox()
+        main_box.props.homogeneous = False
+        scrolled_window.add(main_box)
         self.set_border_width(2)
         self.set_default_size(700, 550)
 
@@ -85,6 +88,7 @@ class SBWindow(Gtk.ApplicationWindow):
 
         # Source view
         self.sourceview = GtkSource.View.new()
+        self.sourceview.props.expand=True
         self.sourceview.set_auto_indent(True)
         self.sourceview.set_insert_spaces_instead_of_tabs(True)
         self.sourceview.set_indent_width(4)
@@ -92,7 +96,20 @@ class SBWindow(Gtk.ApplicationWindow):
         lm = GtkSource.LanguageManager.new()
         buf = self.sourceview.get_buffer()
         buf.set_language(lm.get_language("html"))
-        scrolled_window.add(self.sourceview)
+
+        self.infobar = Gtk.InfoBar()
+        self.infobar.props.no_show_all = True
+        self.infobar.props.expand = False
+        self.infobar.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        self.infobar.set_default_response(Gtk.ResponseType.CLOSE)
+        self.infobar.connect("response", self.on_infobar_response)
+        infobar_label = Gtk.Label("InfoBar example")
+        infobar_label.props.visible = True
+        content = self.infobar.get_content_area()
+        content.add(infobar_label)
+
+        main_box.pack_start(self.infobar, False, False, 0)
+        main_box.pack_end(self.sourceview, True, True, 0)
 
         self.add(scrolled_window)
         if self.app.config["active_blog"]:
@@ -109,6 +126,9 @@ class SBWindow(Gtk.ApplicationWindow):
     #    When moving focus out of title entry make it look like label
     #    """
     #    target.get_style_context().remove_class("entry")
+
+    def on_infobar_response(self, infobar, response_id):
+        infobar.hide()
 
     def on_post_button_clicked(self, target):
         """
@@ -130,7 +150,8 @@ class SBWindow(Gtk.ApplicationWindow):
                 self.app.config["blogs"][index]["tags"].extend(new_tags)
                 save_config(self.app.config)
         result = service.send_post(blog["id"], self.title_entry.get_text(), self.sourceview.get_buffer().props.text, tags)
-        print result
+        self.infobar.get_content_area().get_children()[0].set_text(result)
+        self.infobar.show()
 
     def on_tag_popover_hide(self, target, tag_button):
         """
