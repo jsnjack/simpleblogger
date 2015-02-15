@@ -3,6 +3,7 @@ import sys
 from gi.repository import Gtk, Gio, GtkSource
 
 from dialogs.add_account import AddAccountDialog
+from providers.blogger import BloggerProvider
 from utils import load_config, save_config, get_blog_by_id
 
 
@@ -42,6 +43,7 @@ class SBWindow(Gtk.ApplicationWindow):
         self.set_titlebar(header_bar)
 
         post_button = Gtk.Button()
+        post_button.connect("clicked", self.on_post_button_clicked)
         icon = Gio.ThemedIcon(name="document-send-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
         post_button.add(image)
@@ -93,6 +95,12 @@ class SBWindow(Gtk.ApplicationWindow):
         """
         target.get_style_context().remove_class("entry")
 
+    def on_post_button_clicked(self, target):
+        """
+        Send post to remote server
+        """
+        print 1
+
 
 class SBApplication(Gtk.Application):
     config = None
@@ -142,8 +150,8 @@ class SBApplication(Gtk.Application):
                 password = content_widgets[1].get_text()
                 provider = content_widgets[2].get_active_id()
                 if provider == "blogger":
-                    from blogger import get_blogs
-                data = get_blogs(username, password)
+                    service = BloggerProvider(username, password)
+                data = service.get_blogs()
                 if data["status"] == "ok":
                     message = "<b>Following blogs will be added:</b> \n"
                     for item in data["blogs"]:
