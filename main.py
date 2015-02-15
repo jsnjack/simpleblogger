@@ -54,8 +54,8 @@ class SBWindow(Gtk.ApplicationWindow):
         tag_button = Gtk.Button()
         tag_button.get_style_context().add_class("suggested-action")
         tag_popover = Gtk.Popover.new(tag_button)
-        tag_entry = Gtk.Entry()
-        tag_popover.add(tag_entry)
+        self.tag_entry = Gtk.Entry()
+        tag_popover.add(self.tag_entry)
         tag_button.connect("clicked", self.on_tag_button_clicked, tag_popover)
         tag_popover.connect("hide", self.on_tag_popover_hide, tag_button)
         icon = Gio.ThemedIcon(name="bookmark-new-symbolic")
@@ -117,7 +117,18 @@ class SBWindow(Gtk.ApplicationWindow):
         blog = get_blog_by_id(self.app.config, self.app.config["active_blog"])
         if blog["provider"] == "blogger":
             service = BloggerProvider(blog["username"], blog["password"])
-        result = service.send_post(blog["id"], self.title_entry.get_text(), self.sourceview.get_buffer().props.text, [])
+            tags = self.tag_entry.get_text().split(",")
+            tags = [x.strip() for x in tags]
+            # Add new tags to the blog
+            new_tags = []
+            for tag in tags:
+                if not tag in blog["tags"]:
+                    new_tags.append(tag)
+            if new_tags:
+                index = self.app.config["blogs"].index(blog)
+                self.app.config["blogs"][index]["tags"].extend(new_tags)
+                save_config(self.app.config)
+        result = service.send_post(blog["id"], self.title_entry.get_text(), self.sourceview.get_buffer().props.text, tags)
         print result
 
     def on_tag_popover_hide(self, target, tag_button):
@@ -169,8 +180,7 @@ class SBWindow(Gtk.ApplicationWindow):
         completion.set_match_func(custom_match_func, None)
         completion.connect('match-selected', on_match_selected)
 
-        entry = tag_popover.get_child()
-        entry.set_completion(completion)
+        self.tag_entry.set_completion(completion)
 
         tag_popover.show_all()
 
