@@ -168,7 +168,8 @@ class SBApplication(Gtk.Application):
                     dialog.destroy()
 
                 for item in data["blogs"]:
-                    self.config["blogs"].append(item)
+                    if not get_blog_by_id(self.config, item["id"]):
+                        self.config["blogs"].append(item)
                 save_config(self.config)
 
                 if data["status"] == "error":
