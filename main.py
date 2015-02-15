@@ -9,6 +9,7 @@ from utils import load_config, save_config, get_blog_by_id
 
 class SBWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
+        self.app = app
 
         Gtk.Window.__init__(self, title="Simpleblogger", application=app)
 
@@ -23,21 +24,21 @@ class SBWindow(Gtk.ApplicationWindow):
         header_bar.props.vexpand = True
         header_bar_box = Gtk.VBox()
 
-        title_entry = Gtk.Entry(placeholder_text=u"New post title")
-        title_entry.connect("focus_in_event", self.on_title_entry_focus_in)
-        title_entry.connect("focus_out_event", self.on_title_entry_focus_out)
-        title_entry.props.xalign = 0.5
-        title_entry.props.hexpand = True
-        title_entry.props.vexpand = True
-        title_entry.props.width_chars = 50
-        title_entry_style = title_entry.get_style_context()
+        self.title_entry = Gtk.Entry(placeholder_text=u"New post title")
+        self.title_entry.connect("focus_in_event", self.on_title_entry_focus_in)
+        self.title_entry.connect("focus_out_event", self.on_title_entry_focus_out)
+        self.title_entry.props.xalign = 0.5
+        self.title_entry.props.hexpand = True
+        self.title_entry.props.vexpand = True
+        self.title_entry.props.width_chars = 50
+        title_entry_style = self.title_entry.get_style_context()
         title_entry_style.add_class("title")
         title_entry_style.remove_class("entry")
 
         subtitle_label = Gtk.Label()
         subtitle_label.get_style_context().add_class("subtitle")
 
-        header_bar_box.add(title_entry)
+        header_bar_box.add(self.title_entry)
         header_bar_box.add(subtitle_label)
         header_bar.set_custom_title(header_bar_box)
         self.set_titlebar(header_bar)
@@ -61,7 +62,7 @@ class SBWindow(Gtk.ApplicationWindow):
         menumodel.append("Quit", "app.quit")
 
         m2 = Gio.Menu()
-        for item in app.config["blogs"]:
+        for item in self.app.config["blogs"]:
             m2.append(item["name"], "app.select_blog_%s" % item["id"])
         menumodel.append_submenu("Blogs", m2)
 
@@ -69,19 +70,19 @@ class SBWindow(Gtk.ApplicationWindow):
         menu_button.set_popover(popover)
 
         # Source view
-        sourceview = GtkSource.View.new()
-        sourceview.set_auto_indent(True)
-        sourceview.set_insert_spaces_instead_of_tabs(True)
-        sourceview.set_indent_width(4)
-        sourceview.set_wrap_mode(Gtk.WrapMode.WORD)
+        self.sourceview = GtkSource.View.new()
+        self.sourceview.set_auto_indent(True)
+        self.sourceview.set_insert_spaces_instead_of_tabs(True)
+        self.sourceview.set_indent_width(4)
+        self.sourceview.set_wrap_mode(Gtk.WrapMode.WORD)
         lm = GtkSource.LanguageManager.new()
-        buf = sourceview.get_buffer()
+        buf = self.sourceview.get_buffer()
         buf.set_language(lm.get_language("html"))
-        scrolled_window.add(sourceview)
+        scrolled_window.add(self.sourceview)
 
         self.add(scrolled_window)
-        if app.config["active_blog"]:
-            app.activate_blog(app.config["active_blog"])
+        if self.app.config["active_blog"]:
+            self.app.activate_blog(self.app.config["active_blog"])
 
     def on_title_entry_focus_in(self, target, x):
         """
@@ -99,7 +100,11 @@ class SBWindow(Gtk.ApplicationWindow):
         """
         Send post to remote server
         """
-        print 1
+        blog = get_blog_by_id(self.app.config, self.app.config["active_blog"])
+        if blog["provider"] == "blogger":
+            service = BloggerProvider(blog["username"], blog["password"])
+        result = service.send_post(blog["id"], self.title_entry.get_text(), self.sourceview.get_buffer().props.text, [])
+        print result
 
 
 class SBApplication(Gtk.Application):

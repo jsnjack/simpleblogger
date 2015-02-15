@@ -85,7 +85,8 @@ class BloggerProvider():
                 "id": item.GetSelfLink().href.split("/")[-1],
                 "username": self.username,
                 "password": self.password,
-                "link": item.link[1].href
+                "link": item.link[1].href,
+                "provider": "blogger"
             })
         return {
             "status": "ok",
