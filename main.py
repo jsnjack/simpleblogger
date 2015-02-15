@@ -26,8 +26,8 @@ class SBWindow(Gtk.ApplicationWindow):
         header_bar_box = Gtk.VBox()
 
         self.title_entry = Gtk.Entry(placeholder_text=u"New post title")
-        self.title_entry.connect("focus_in_event", self.on_title_entry_focus_in)
-        self.title_entry.connect("focus_out_event", self.on_title_entry_focus_out)
+        #self.title_entry.connect("focus_in_event", self.on_title_entry_focus_in)
+        #self.title_entry.connect("focus_out_event", self.on_title_entry_focus_out)
         self.title_entry.props.xalign = 0.5
         self.title_entry.props.hexpand = True
         self.title_entry.props.vexpand = True
@@ -98,17 +98,17 @@ class SBWindow(Gtk.ApplicationWindow):
         if self.app.config["active_blog"]:
             self.app.activate_blog(self.app.config["active_blog"])
 
-    def on_title_entry_focus_in(self, target, x):
-        """
-        When focus on title entry make it look like entry
-        """
-        target.get_style_context().add_class("entry")
-
-    def on_title_entry_focus_out(self, target, x):
-        """
-        When moving focus out of title entry make it look like label
-        """
-        target.get_style_context().remove_class("entry")
+    #def on_title_entry_focus_in(self, target, x):
+    #    """
+    #    When focus on title entry make it look like entry
+    #    """
+    #    target.get_style_context().add_class("entry")
+    #
+    #def on_title_entry_focus_out(self, target, x):
+    #    """
+    #    When moving focus out of title entry make it look like label
+    #    """
+    #    target.get_style_context().remove_class("entry")
 
     def on_post_button_clicked(self, target):
         """
