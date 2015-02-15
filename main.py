@@ -52,10 +52,12 @@ class SBWindow(Gtk.ApplicationWindow):
         header_bar.pack_start(post_button)
 
         tag_button = Gtk.Button()
+        tag_button.get_style_context().add_class("suggested-action")
         tag_popover = Gtk.Popover.new(tag_button)
         tag_entry = Gtk.Entry()
         tag_popover.add(tag_entry)
         tag_button.connect("clicked", self.on_tag_button_clicked, tag_popover)
+        tag_popover.connect("hide", self.on_tag_popover_hide, tag_button)
         icon = Gio.ThemedIcon(name="bookmark-new-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
         tag_button.add(image)
@@ -117,6 +119,14 @@ class SBWindow(Gtk.ApplicationWindow):
             service = BloggerProvider(blog["username"], blog["password"])
         result = service.send_post(blog["id"], self.title_entry.get_text(), self.sourceview.get_buffer().props.text, [])
         print result
+
+    def on_tag_popover_hide(self, target, tag_button):
+        """
+        Highlights button if tags is empty
+        """
+        tag_button.get_style_context().remove_class("suggested-action")
+        if not target.get_child().get_text():
+            tag_button.get_style_context().add_class("suggested-action")
 
     def on_tag_button_clicked(self, target, tag_popover):
         """
