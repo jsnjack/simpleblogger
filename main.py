@@ -61,10 +61,10 @@ class SBWindow(Gtk.ApplicationWindow):
         menumodel.append("Add account...", "app.add_account")
         menumodel.append("Quit", "app.quit")
 
-        m2 = Gio.Menu()
+        self.select_blog_menu = Gio.Menu()
         for item in self.app.config["blogs"]:
-            m2.append(item["name"], "app.select_blog_%s" % item["id"])
-        menumodel.append_submenu("Blogs", m2)
+            self.select_blog_menu.append(item["name"], "app.select_blog_%s" % item["id"])
+        menumodel.append_submenu("Blogs", self.select_blog_menu)
 
         popover = Gtk.Popover().new_from_model(menu_button, menumodel)
         menu_button.set_popover(popover)
@@ -136,9 +136,12 @@ class SBApplication(Gtk.Application):
             self.add_action(quit_action)
 
             for item in self.config["blogs"]:
-                select_blog_action = Gio.SimpleAction.new("select_blog_%s" % item["id"], None)
-                select_blog_action.connect("activate", self.select_blog_callback)
-                self.add_action(select_blog_action)
+                self.create_select_blog_action(item["id"])
+
+    def create_select_blog_action(self, blog_id):
+        select_blog_action = Gio.SimpleAction.new("select_blog_%s" % blog_id, None)
+        select_blog_action.connect("activate", self.select_blog_callback)
+        self.add_action(select_blog_action)
 
     def add_account_callback(self, action, parameter):
         """
@@ -167,10 +170,15 @@ class SBApplication(Gtk.Application):
                     ok_dialog.destroy()
                     dialog.destroy()
 
-                for item in data["blogs"]:
-                    if not get_blog_by_id(self.config, item["id"]):
-                        self.config["blogs"].append(item)
-                save_config(self.config)
+                    for item in data["blogs"]:
+                        if not get_blog_by_id(self.config, item["id"]):
+                            self.config["blogs"].append(item)
+                            # Creat actions and add new item in the menu
+                            self.create_select_blog_action(item["id"])
+                            main_window = self.get_windows()[0]
+                            main_window.select_blog_menu.append(item["name"], "app.select_blog_%s" % item["id"])
+
+                    save_config(self.config)
 
                 if data["status"] == "error":
                     error_dialog = Gtk.MessageDialog(parent=dialog, text=data["error"], buttons=(Gtk.STOCK_APPLY, Gtk.ResponseType.OK))
