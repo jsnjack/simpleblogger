@@ -3,6 +3,7 @@ import sys
 from gi.repository import Gtk, Gio, GtkSource
 
 from dialogs.add_account import AddAccountDialog
+from dialogs.preview import PreviewDialog
 from providers.blogger import BloggerProvider
 from utils import load_config, save_config, get_blog_by_id
 
@@ -58,6 +59,7 @@ class SBWindow(Gtk.ApplicationWindow):
 
         menumodel = Gio.Menu()
         menumodel.append("New", "app.new")
+        menumodel.append("Preview", "app.preview")
         menumodel.append("Add account...", "app.add_account")
         menumodel.append("Quit", "app.quit")
 
@@ -130,6 +132,10 @@ class SBApplication(Gtk.Application):
             new_action = Gio.SimpleAction.new("new", None)
             new_action.connect("activate", self.on_new)
             self.add_action(new_action)
+
+            preview_action = Gio.SimpleAction.new("preview", None)
+            preview_action.connect("activate", self.on_preview)
+            self.add_action(preview_action)
 
             quit_action = Gio.SimpleAction.new("quit", None)
             quit_action.connect("activate", self.on_quit)
@@ -205,6 +211,14 @@ class SBApplication(Gtk.Application):
         header_bar = window.get_children()[1]
         header_bar.get_custom_title().get_children()[0].set_text("")
         window.sourceview.get_buffer().props.text = ""
+
+    def on_preview(self, action, parameter):
+        """
+        Open preview dialog
+        """
+        dialog = PreviewDialog(self.main_window)
+        dialog.run()
+        dialog.destroy()
 
     def on_select_blog(self, action, parameter):
         """
