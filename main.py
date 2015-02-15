@@ -100,6 +100,7 @@ class SBWindow(Gtk.ApplicationWindow):
         self.infobar = Gtk.InfoBar()
         self.infobar.props.no_show_all = True
         self.infobar.props.expand = False
+        self.infobar.add_button(Gtk.STOCK_NEW, Gtk.ResponseType.APPLY)
         self.infobar.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
         self.infobar.set_default_response(Gtk.ResponseType.CLOSE)
         self.infobar.connect("response", self.on_infobar_response)
@@ -127,7 +128,21 @@ class SBWindow(Gtk.ApplicationWindow):
     #    """
     #    target.get_style_context().remove_class("entry")
 
+    def new_post(self):
+        """
+        Clear window for a new post
+        """
+        self.get_children()[1].get_custom_title().get_children()[0].set_text("")
+        self.sourceview.get_buffer().props.text = ""
+        self.tag_entry.set_text("")
+        self.tag_entry.get_parent().get_relative_to().get_style_context().add_class("suggested-action")
+
     def on_infobar_response(self, infobar, response_id):
+        """
+        Handle user response
+        """
+        if response_id == Gtk.ResponseType.APPLY:
+            self.new_post()
         infobar.hide()
 
     def on_post_button_clicked(self, target):
@@ -306,9 +321,7 @@ class SBApplication(Gtk.Application):
         Clean title and source view
         """
         window = self.get_windows()[0]
-        header_bar = window.get_children()[1]
-        header_bar.get_custom_title().get_children()[0].set_text("")
-        window.sourceview.get_buffer().props.text = ""
+        window.new_post()
 
     def on_preview(self, action, parameter):
         """
