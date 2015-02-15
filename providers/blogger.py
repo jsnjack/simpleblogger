@@ -86,6 +86,7 @@ class BloggerProvider():
                 "username": self.username,
                 "password": self.password,
                 "link": item.link[1].href,
+                "tags": [unicode(tag.term, 'utf8') for tag in item.category],
                 "provider": "blogger"
             })
         return {

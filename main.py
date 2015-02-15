@@ -51,6 +51,16 @@ class SBWindow(Gtk.ApplicationWindow):
         post_button.add(image)
         header_bar.pack_start(post_button)
 
+        tag_button = Gtk.Button()
+        tag_popover = Gtk.Popover.new(tag_button)
+        tag_entry = Gtk.Entry()
+        tag_popover.add(tag_entry)
+        tag_button.connect("clicked", self.on_tag_button_clicked, tag_popover)
+        icon = Gio.ThemedIcon(name="bookmark-new-symbolic")
+        image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
+        tag_button.add(image)
+        header_bar.pack_start(tag_button)
+
         menu_button = Gtk.MenuButton()
         icon = Gio.ThemedIcon(name="open-menu-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
@@ -68,8 +78,8 @@ class SBWindow(Gtk.ApplicationWindow):
             self.select_blog_menu.append(item["name"], "app.select_blog_%s" % item["id"])
         menumodel.append_submenu("Blogs", self.select_blog_menu)
 
-        popover = Gtk.Popover().new_from_model(menu_button, menumodel)
-        menu_button.set_popover(popover)
+        menu_popover = Gtk.Popover().new_from_model(menu_button, menumodel)
+        menu_button.set_popover(menu_popover)
 
         # Source view
         self.sourceview = GtkSource.View.new()
@@ -107,6 +117,52 @@ class SBWindow(Gtk.ApplicationWindow):
             service = BloggerProvider(blog["username"], blog["password"])
         result = service.send_post(blog["id"], self.title_entry.get_text(), self.sourceview.get_buffer().props.text, [])
         print result
+
+    def on_tag_button_clicked(self, target, tag_popover):
+        """
+        Select tag
+        """
+        def custom_match_func(completion, key, treeiter, user_data):
+            """
+            Filters matches
+            """
+            last_key = key.split(",")[-1].strip()
+            if last_key in completion.get_model()[treeiter][0]:
+                return True
+
+        def on_match_selected(completion, treemodel, treeiter):
+            """
+            Adds selected match to the string
+            """
+            current_text = completion.get_entry().get_text()
+            to_preserve = current_text.split(",")[:-1]
+            old_text = u""
+            for item in to_preserve:
+                old_text = old_text + unicode(item.strip(), "utf-8") + u", "
+            new_text = old_text + unicode(treemodel[treeiter][0], "utf-8")
+
+            # set back the whole text
+            completion.get_entry().set_text(new_text)
+            # move the cursor at the end
+            completion.get_entry().set_position(-1)
+            return True
+
+        blog = get_blog_by_id(self.app.config, self.app.config["active_blog"])
+
+        liststore = Gtk.ListStore(str)
+        for item in blog["tags"]:
+            liststore.append([item])
+
+        completion = Gtk.EntryCompletion()
+        completion.set_model(liststore)
+        completion.set_text_column(0)
+        completion.set_match_func(custom_match_func, None)
+        completion.connect('match-selected', on_match_selected)
+
+        entry = tag_popover.get_child()
+        entry.set_completion(completion)
+
+        tag_popover.show_all()
 
 
 class SBApplication(Gtk.Application):
