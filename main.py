@@ -128,11 +128,11 @@ class SBApplication(Gtk.Application):
             self.add_action(add_account_action)
 
             new_action = Gio.SimpleAction.new("new", None)
-            new_action.connect("activate", self.new_callback)
+            new_action.connect("activate", self.on_new)
             self.add_action(new_action)
 
             quit_action = Gio.SimpleAction.new("quit", None)
-            quit_action.connect("activate", self.quit_callback)
+            quit_action.connect("activate", self.on_quit)
             self.add_action(quit_action)
 
             for item in self.config["blogs"]:
@@ -140,7 +140,7 @@ class SBApplication(Gtk.Application):
 
     def create_select_blog_action(self, blog_id):
         select_blog_action = Gio.SimpleAction.new("select_blog_%s" % blog_id, None)
-        select_blog_action.connect("activate", self.select_blog_callback)
+        select_blog_action.connect("activate", self.on_select_blog)
         self.add_action(select_blog_action)
 
     def add_account_callback(self, action, parameter):
@@ -191,14 +191,22 @@ class SBApplication(Gtk.Application):
         dialog = AddAccountDialog(self.main_window)
         run_dialog(dialog)
 
-    def new_callback(self, action, parameter):
-            print("You clicked \"New\"")
+    def on_quit(self, action, parameter):
+        """
+        Quit from the application
+        """
+        self.quit()
 
-    def quit_callback(self, action, parameter):
-            print("You clicked \"Quit\"")
-            self.quit()
+    def on_new(self, action, parameter):
+        """
+        Clean title and source view
+        """
+        window = self.get_windows()[0]
+        header_bar = window.get_children()[1]
+        header_bar.get_custom_title().get_children()[0].set_text("")
+        window.sourceview.get_buffer().props.text = ""
 
-    def select_blog_callback(self, action, parameter):
+    def on_select_blog(self, action, parameter):
         """
         Make selected blog active
         """
