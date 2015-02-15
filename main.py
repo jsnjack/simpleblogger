@@ -314,7 +314,11 @@ class SBApplication(Gtk.Application):
         if blog:
             window = self.get_windows()[0]
             header_bar = window.get_children()[1]
-            header_bar.get_custom_title().get_children()[1].set_text(blog["name"])
+            text = u'<a href="{href}">{name}</a>'.format(href=blog["link"], name=blog["name"])
+            subtitle = header_bar.get_custom_title().get_children()[1]
+            subtitle.props.use_markup = True
+            subtitle.props.track_visited_links = False
+            subtitle.set_markup(text)
 
 
 if __name__ == '__main__':
