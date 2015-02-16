@@ -88,7 +88,7 @@ class SBWindow(Gtk.ApplicationWindow):
 
         # Source view
         self.sourceview = GtkSource.View.new()
-        self.sourceview.props.expand=True
+        self.sourceview.props.expand = True
         self.sourceview.set_auto_indent(True)
         self.sourceview.set_insert_spaces_instead_of_tabs(True)
         self.sourceview.set_indent_width(4)
@@ -234,28 +234,28 @@ class SBApplication(Gtk.Application):
         self.main_window.show_all()
 
     def do_startup(self):
-            Gtk.Application.do_startup(self)
+        Gtk.Application.do_startup(self)
 
-            self.config = load_config()
+        self.config = load_config()
 
-            add_account_action = Gio.SimpleAction.new("add_account", None)
-            add_account_action.connect("activate", self.add_account_callback)
-            self.add_action(add_account_action)
+        add_account_action = Gio.SimpleAction.new("add_account", None)
+        add_account_action.connect("activate", self.add_account_callback)
+        self.add_action(add_account_action)
 
-            new_action = Gio.SimpleAction.new("new", None)
-            new_action.connect("activate", self.on_new)
-            self.add_action(new_action)
+        new_action = Gio.SimpleAction.new("new", None)
+        new_action.connect("activate", self.on_new)
+        self.add_action(new_action)
 
-            preview_action = Gio.SimpleAction.new("preview", None)
-            preview_action.connect("activate", self.on_preview)
-            self.add_action(preview_action)
+        preview_action = Gio.SimpleAction.new("preview", None)
+        preview_action.connect("activate", self.on_preview)
+        self.add_action(preview_action)
 
-            quit_action = Gio.SimpleAction.new("quit", None)
-            quit_action.connect("activate", self.on_quit)
-            self.add_action(quit_action)
+        quit_action = Gio.SimpleAction.new("quit", None)
+        quit_action.connect("activate", self.on_quit)
+        self.add_action(quit_action)
 
-            for item in self.config["blogs"]:
-                self.create_select_blog_action(item["id"])
+        for item in self.config["blogs"]:
+            self.create_select_blog_action(item["id"])
 
     def create_select_blog_action(self, blog_id):
         select_blog_action = Gio.SimpleAction.new("select_blog_%s" % blog_id, None)
