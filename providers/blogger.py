@@ -56,7 +56,7 @@ class BloggerProvider():
                                           scheme="http://www.blogger.com/atom/ns#")
                     entry.category.append(label)
                 blogger_service.Post(entry, '/feeds/%s/posts/default' % blogid)
-                result = u'Posted.'
+                result = u'Successfully published'
             except:
                 result = u'Error'
         else:
