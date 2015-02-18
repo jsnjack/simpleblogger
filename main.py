@@ -66,6 +66,19 @@ class SBWindow(Gtk.ApplicationWindow):
         tag_button.add(image)
         header_bar.pack_start(tag_button)
 
+        insert_button = Gtk.MenuButton()
+        icon = Gio.ThemedIcon(name="list-add-symbolic")
+        image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
+        insert_button.add(image)
+        header_bar.pack_start(insert_button)
+
+        insert_menumodel = Gio.Menu()
+        insert_menumodel.append("Image...", "app.insert_image")
+        insert_menumodel.append("Code...", "app.insert_code")
+
+        insert_popover = Gtk.Popover().new_from_model(insert_button, insert_menumodel)
+        insert_button.set_popover(insert_popover)
+
         menu_button = Gtk.MenuButton()
         icon = Gio.ThemedIcon(name="open-menu-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
@@ -257,6 +270,15 @@ class SBApplication(Gtk.Application):
         for item in self.config["blogs"]:
             self.create_select_blog_action(item["id"])
 
+        # Insert actions
+        insert_image_action = Gio.SimpleAction.new("insert_image", None)
+        insert_image_action.connect("activate", self.on_insert_image)
+        self.add_action(insert_image_action)
+
+        insert_code_action = Gio.SimpleAction.new("insert_code", None)
+        insert_code_action.connect("activate", self.on_insert_code)
+        self.add_action(insert_code_action)
+
     def create_select_blog_action(self, blog_id):
         select_blog_action = Gio.SimpleAction.new("select_blog_%s" % blog_id, None)
         select_blog_action.connect("activate", self.on_select_blog)
@@ -309,6 +331,18 @@ class SBApplication(Gtk.Application):
 
         dialog = AddAccountDialog(self.main_window)
         run_dialog(dialog)
+
+    def on_insert_image(self, action, parameter):
+        """
+        Insert image into post
+        """
+        print("Insert image")
+
+    def on_insert_code(self, action, parameter):
+        """
+        Insert code block into post
+        """
+        print("Insert code")
 
     def on_quit(self, action, parameter):
         """
