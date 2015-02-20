@@ -1,7 +1,7 @@
 import os
 import sys
 
-from gi.repository import Gtk, Gio, GtkSource
+from gi.repository import Gtk, Gio, GtkSource, GdkPixbuf
 
 from dialogs.add_account import AddAccountDialog
 from dialogs.preview import PreviewDialog
@@ -345,6 +345,20 @@ class SBApplication(Gtk.Application):
             if filter_info.mime_type in allowed_mime_types:
                 return True
 
+        def image_preview_func(target):
+            """
+            Update preview widget
+            """
+            filename = target.get_preview_filename()
+            preview_widget = target.get_preview_widget()
+            preview_widget.props.margin_right = 10
+            try:
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(filename, 200, 200)
+                preview_widget.set_from_pixbuf(pixbuf)
+                target.set_preview_widget_active(True)
+            except:
+                target.set_preview_widget_active(False)
+
         dialog = Gtk.FileChooserDialog(
             "Please choose an image", self.main_window, Gtk.FileChooserAction.OPEN,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
@@ -366,7 +380,13 @@ class SBApplication(Gtk.Application):
         any_filter.add_pattern("*")
         dialog.add_filter(any_filter)
 
+        preview_widget = Gtk.Image()
+        dialog.set_preview_widget(preview_widget)
+
+        filechooser = dialog.get_content_area().get_children()[0]
+        filechooser.connect("update-preview", image_preview_func)
         response = dialog.run()
+
         if response == Gtk.ResponseType.OK:
             print("Open clicked")
             print("File selected: " + dialog.get_filename())
