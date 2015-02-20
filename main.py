@@ -1,3 +1,4 @@
+import os
 import sys
 
 from gi.repository import Gtk, Gio, GtkSource
@@ -336,7 +337,43 @@ class SBApplication(Gtk.Application):
         """
         Insert image into post
         """
-        print("Insert image")
+        def image_filter_func(filter_info, data):
+            """
+            Allows user to choose only images
+            """
+            allowed_mime_types = ("image/png", "image/jpeg")
+            if filter_info.mime_type in allowed_mime_types:
+                return True
+
+        dialog = Gtk.FileChooserDialog(
+            "Please choose an image", self.main_window, Gtk.FileChooserAction.OPEN,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_ADD, Gtk.ResponseType.OK)
+        )
+        dialog.set_current_folder(os.path.join(os.path.expanduser('~'), 'Pictures'))
+
+        add_button = dialog.get_header_bar().get_children()[1]
+        add_button.get_style_context().add_class("suggested-action")
+
+        # Add filters
+        image_filter = Gtk.FileFilter()
+        image_filter.set_name("Image files")
+        image_filter.add_custom(Gtk.FileFilterFlags.MIME_TYPE, image_filter_func, None)
+        dialog.add_filter(image_filter)
+
+        any_filter = Gtk.FileFilter()
+        any_filter.set_name("Any files")
+        any_filter.add_pattern("*")
+        dialog.add_filter(any_filter)
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            print("Open clicked")
+            print("File selected: " + dialog.get_filename())
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancel clicked")
+
+        dialog.destroy()
 
     def on_insert_code(self, action, parameter):
         """
