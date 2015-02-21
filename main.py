@@ -6,7 +6,8 @@ from gi.repository import Gtk, Gio, GtkSource, GdkPixbuf
 from dialogs.add_account import AddAccountDialog
 from dialogs.preview import PreviewDialog
 from providers.blogger import BloggerProvider
-from utils import load_config, save_config, get_blog_by_id
+from providers.picasa import PicasaImageThreading
+from utils import load_config, save_config, get_blog_by_id, wrap_image_url
 
 
 class SBWindow(Gtk.ApplicationWindow):
@@ -237,6 +238,7 @@ class SBApplication(Gtk.Application):
         Gtk.Application.do_startup(self)
 
         self.config = load_config()
+        self.active_blog = self.config["active_blog"]
 
         add_account_action = Gio.SimpleAction.new("add_account", None)
         add_account_action.connect("activate", self.add_account_callback)
@@ -374,12 +376,37 @@ class SBApplication(Gtk.Application):
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:
-            print("Open clicked")
-            print("File selected: " + dialog.get_filename())
-        elif response == Gtk.ResponseType.CANCEL:
-            print("Cancel clicked")
-
-        dialog.destroy()
+            image_filename = dialog.get_filename()
+            dialog.destroy()
+            # Show spinner
+            spinner_dialog = Gtk.MessageDialog(
+                parent=self.main_window, text="Wait until your image is uploaded",
+                buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+            )
+            box = spinner_dialog.get_content_area()
+            spinner = Gtk.Spinner()
+            spinner.props.visible = True
+            box.add(spinner)
+            spinner.start()
+            uploading_thread = PicasaImageThreading(
+                get_blog_by_id(self.config, self.active_blog),
+                image_filename,
+                spinner_dialog
+            )
+            uploading_thread.start()
+            response = spinner_dialog.run()
+            if response == Gtk.ResponseType.OK:
+                # Image was uploaded successfully insert code into post and close
+                # dialog
+                image_url = spinner_dialog.uploaded_image_link
+                spinner_dialog.destroy()
+                self.main_window.sourceview.get_buffer().insert_at_cursor(wrap_image_url(image_url))
+            else:
+                # User canceled uploading. Stop thread, close dialog
+                uploading_thread.stop()
+                spinner_dialog.destroy()
+        else:
+            dialog.destroy()
 
     def on_insert_code(self, action, parameter):
         """

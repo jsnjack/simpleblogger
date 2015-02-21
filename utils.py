@@ -3,6 +3,7 @@ import pickle
 
 
 CONFIG_PATH = "./config/config.sb"
+IMAGE_WRAP_TEMPLATE_PATH = "./config/image_insertion_template.html"
 
 
 def load_config():
@@ -39,3 +40,18 @@ def get_blog_by_id(config, blog_id):
     for item in config["blogs"]:
         if item["id"] == blog_id:
             return item
+
+
+def wrap_image_url(url):
+    """
+    Wraps image url in html tags
+    """
+    with open(IMAGE_WRAP_TEMPLATE_PATH, 'rb') as wrap_template:
+        content = wrap_template.read()
+        filename = url.split("/")[-1]
+        filename_with_size = "{image_size}/" + filename
+        new_url = url.replace(filename, filename_with_size)
+        return content.format(
+            image_url=new_url.format(image_size="s0"),
+            thumbnail_url=new_url.format(image_size="s450")
+            )
