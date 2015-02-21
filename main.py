@@ -2,8 +2,12 @@ import os
 import sys
 
 from gi.repository import Gtk, Gio, GtkSource, GdkPixbuf
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import guess_lexer, get_lexer_by_name
 
 from dialogs.add_account import AddAccountDialog
+from dialogs.insert_code import InsertCodeDialog
 from dialogs.preview import PreviewDialog
 from providers.blogger import BloggerProvider
 from providers.picasa import PicasaImageThreading
@@ -412,7 +416,29 @@ class SBApplication(Gtk.Application):
         """
         Insert code block into post
         """
-        print("Insert code")
+        dialog = InsertCodeDialog(self.main_window)
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            lexer_name = None
+            lexer_verbose_name = dialog.get_content_area().get_children()[0].get_active_text()
+            list_model = dialog.get_content_area().get_children()[0].get_model()
+            for item in list_model:
+                if item[0] == lexer_verbose_name:
+                    lexer_name = item[1]
+                    break
+            code = dialog.get_content_area().get_children()[1].get_buffer().props.text
+
+            dialog.destroy()
+
+            if lexer_name:
+                lexer = get_lexer_by_name(lexer_name)
+            else:
+                lexer = guess_lexer(code)
+            styled_code = highlight(code, lexer, HtmlFormatter())
+            self.main_window.sourceview.get_buffer().insert_at_cursor(styled_code)
+        else:
+            dialog.destroy()
 
     def on_quit(self, action, parameter):
         """
