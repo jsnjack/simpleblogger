@@ -1,4 +1,5 @@
 from gi.repository import Gtk, WebKit2
+from pygments.formatters import HtmlFormatter
 
 
 class PreviewDialog(Gtk.Dialog):
@@ -9,7 +10,11 @@ class PreviewDialog(Gtk.Dialog):
         box = self.get_content_area()
         webview = WebKit2.WebView.new()
         webview.props.expand = True
-        webview.load_html(parent.sourceview.get_buffer().props.text, None)
+        html = "<style>{css}</style>{content}".format(
+            css=HtmlFormatter().get_style_defs(),
+            content=parent.sourceview.get_buffer().props.text
+        )
+        webview.load_html(html, None)
         box.add(webview)
 
         self.show_all()
