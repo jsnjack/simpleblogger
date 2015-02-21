@@ -30,8 +30,6 @@ class SBWindow(Gtk.ApplicationWindow):
         header_bar_box = Gtk.VBox()
 
         self.title_entry = Gtk.Entry(placeholder_text=u"New post title")
-        #self.title_entry.connect("focus_in_event", self.on_title_entry_focus_in)
-        #self.title_entry.connect("focus_out_event", self.on_title_entry_focus_out)
         self.title_entry.props.xalign = 0.5
         self.title_entry.props.hexpand = True
         self.title_entry.props.vexpand = True
@@ -130,18 +128,6 @@ class SBWindow(Gtk.ApplicationWindow):
         if self.app.config["active_blog"]:
             self.app.activate_blog(self.app.config["active_blog"])
 
-    #def on_title_entry_focus_in(self, target, x):
-    #    """
-    #    When focus on title entry make it look like entry
-    #    """
-    #    target.get_style_context().add_class("entry")
-    #
-    #def on_title_entry_focus_out(self, target, x):
-    #    """
-    #    When moving focus out of title entry make it look like label
-    #    """
-    #    target.get_style_context().remove_class("entry")
-
     def new_post(self):
         """
         Clear window for a new post
@@ -172,7 +158,7 @@ class SBWindow(Gtk.ApplicationWindow):
             # Add new tags to the blog
             new_tags = []
             for tag in tags:
-                if not tag in blog["tags"]:
+                if tag not in blog["tags"]:
                     new_tags.append(tag)
             if new_tags:
                 index = self.app.config["blogs"].index(blog)
@@ -228,7 +214,7 @@ class SBWindow(Gtk.ApplicationWindow):
         completion = Gtk.EntryCompletion()
         completion.set_model(liststore)
         completion.set_text_column(0)
-        completion.set_match_func(custom_match_func, None)
+        completion.set_match_func(custom_match_func, None, None)
         completion.connect('match-selected', on_match_selected)
 
         self.tag_entry.set_completion(completion)
