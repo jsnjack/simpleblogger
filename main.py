@@ -56,11 +56,11 @@ class SBWindow(Gtk.ApplicationWindow):
 
         tag_button = Gtk.Button()
         tag_button.get_style_context().add_class("suggested-action")
-        tag_popover = Gtk.Popover.new(tag_button)
+        self.tag_popover = Gtk.Popover.new(tag_button)
         self.tag_entry = Gtk.Entry()
-        tag_popover.add(self.tag_entry)
-        tag_button.connect("clicked", self.on_tag_button_clicked, tag_popover)
-        tag_popover.connect("hide", self.on_tag_popover_hide, tag_button)
+        self.tag_popover.add(self.tag_entry)
+        tag_button.connect("clicked", self.on_tag_button_clicked)
+        self.tag_popover.connect("hide", self.on_tag_popover_hide, tag_button)
         icon = Gio.ThemedIcon(name="bookmark-new-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
         tag_button.add(image)
@@ -177,11 +177,11 @@ class SBWindow(Gtk.ApplicationWindow):
         if not target.get_child().get_text():
             tag_button.get_style_context().add_class("suggested-action")
 
-    def on_tag_button_clicked(self, target, tag_popover):
+    def on_tag_button_clicked(self, target):
         """
         Select tag
         """
-        def custom_match_func(completion, key, treeiter, user_data):
+        def custom_match_func(completion, key, treeiter, user_data, data):
             """
             Filters matches
             """
@@ -220,7 +220,7 @@ class SBWindow(Gtk.ApplicationWindow):
 
         self.tag_entry.set_completion(completion)
 
-        tag_popover.show_all()
+        self.tag_popover.show_all()
 
 
 class SBApplication(Gtk.Application):
