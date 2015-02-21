@@ -45,11 +45,11 @@ class BloggerProvider():
         result, blogger_service = self._login()
         if 'success' in result:
             try:
-                #create a post
+                # create a post
                 entry = gdata.GDataEntry()
                 entry.title = atom.Title('xhtml', post_title)
                 entry.content = atom.Content(content_type='html', text=post_text)
-                #Get selected labels
+                # Get selected labels
                 tags = labels
                 for tag in tags:
                     label = atom.Category(term=tag,
@@ -94,7 +94,7 @@ class BloggerProvider():
             "blogs": blogs
         }
 
-    def login_image(self):
+    def login_picasa(self):
         picasa_client = gdata.photos.service.PhotosService()
         picasa_client.email = self.username + '@gmail.com'
         picasa_client.password = self.password
