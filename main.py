@@ -19,7 +19,8 @@ class SBWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
         self.app = app
 
-        Gtk.Window.__init__(self, title="Simpleblogger", application=app)
+        Gtk.Window.__init__(self, title="simpleblogger", application=app)
+        self.set_wmclass("simpleblogger", "simpleblogger")
 
         # Build UI
         scrolled_window = Gtk.ScrolledWindow()
