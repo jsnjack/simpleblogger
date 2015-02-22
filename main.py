@@ -1,4 +1,5 @@
 import os
+import pickle
 import sys
 
 from gi.repository import Gtk, Gio, GtkSource, GdkPixbuf
@@ -11,7 +12,7 @@ from dialogs.insert_code import InsertCodeDialog
 from dialogs.preview import PreviewDialog
 from providers.blogger import BloggerProvider
 from providers.picasa import PicasaImageThreading
-from utils import load_config, save_config, get_blog_by_id, wrap_image_url
+from utils import load_config, save_config, get_blog_by_id, wrap_image_url, generate_filename
 
 
 class SBWindow(Gtk.ApplicationWindow):
@@ -91,7 +92,9 @@ class SBWindow(Gtk.ApplicationWindow):
 
         menumodel = Gio.Menu()
         menumodel.append("New", "app.new")
-        menumodel.append("Preview", "app.preview")
+        menumodel.append("Open...", "app.open_draft")
+        menumodel.append("Save...", "app.save_draft")
+        menumodel.append("Preview...", "app.preview")
         menumodel.append("Add account...", "app.add_account")
         menumodel.append("Quit", "app.quit")
 
@@ -256,6 +259,14 @@ class SBApplication(Gtk.Application):
         preview_action.connect("activate", self.on_preview)
         self.add_action(preview_action)
 
+        open_action = Gio.SimpleAction.new("open_draft", None)
+        open_action.connect("activate", self.on_open_draft)
+        self.add_action(open_action)
+
+        save_action = Gio.SimpleAction.new("save_draft", None)
+        save_action.connect("activate", self.on_save_draft)
+        self.add_action(save_action)
+
         quit_action = Gio.SimpleAction.new("quit", None)
         quit_action.connect("activate", self.on_quit)
         self.add_action(quit_action)
@@ -324,6 +335,86 @@ class SBApplication(Gtk.Application):
 
         dialog = AddAccountDialog(self.main_window)
         run_dialog(dialog)
+
+    def on_open_draft(self, action, paraneter):
+        """
+        Open draft from previously saved file
+        """
+        dialog = Gtk.FileChooserDialog(
+            "Open draft", self.main_window, Gtk.FileChooserAction.OPEN,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+        )
+
+        open_button = dialog.get_header_bar().get_children()[1]
+        open_button.get_style_context().add_class("suggested-action")
+
+        # Add filters
+        draft_filter = Gtk.FileFilter()
+        draft_filter.set_name("Draft files")
+        draft_filter.add_pattern("*.sbd")
+        dialog.add_filter(draft_filter)
+
+        any_filter = Gtk.FileFilter()
+        any_filter.set_name("Any files")
+        any_filter.add_pattern("*")
+        dialog.add_filter(any_filter)
+
+        dialog.set_current_folder("./drafts/")
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            filename = dialog.get_filename()
+            with open(filename, "rb") as draft_file:
+                draft_obj = pickle.load(draft_file)
+                self.main_window.title_entry.set_text(draft_obj["title"])
+                self.main_window.sourceview.get_buffer().props.text = draft_obj["body"]
+                if draft_obj["tags"]:
+                    self.main_window.tag_entry.get_parent().get_relative_to().get_style_context().remove_class("suggested-action")
+                self.main_window.tag_entry.set_text(draft_obj["tags"])
+        dialog.destroy()
+
+    def on_save_draft(self, action, paraneter):
+        """
+        Save post data to the draft file
+        """
+        dialog = Gtk.FileChooserDialog(
+            "Save draft", self.main_window, Gtk.FileChooserAction.SAVE,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
+        )
+
+        save_button = dialog.get_header_bar().get_children()[1]
+        save_button.get_style_context().add_class("suggested-action")
+
+        # Add filters
+        draft_filter = Gtk.FileFilter()
+        draft_filter.set_name("Draft files")
+        draft_filter.add_pattern("*.sbd")
+        dialog.add_filter(draft_filter)
+
+        any_filter = Gtk.FileFilter()
+        any_filter.set_name("Any files")
+        any_filter.add_pattern("*")
+        dialog.add_filter(any_filter)
+
+        post_title = self.main_window.title_entry.get_text()
+        dialog.set_current_name(generate_filename(post_title) + u".sbd")
+        dialog.set_current_folder("./drafts/")
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            filename = dialog.get_filename()
+            with open(filename, "wb") as draft_file:
+                draft_obj = {
+                    "title": post_title,
+                    "body": self.main_window.sourceview.get_buffer().props.text,
+                    "tags": self.main_window.tag_entry.get_text()
+                }
+                pickle.dump(draft_obj, draft_file)
+            self.main_window.infobar.get_content_area().get_children()[0].set_text("Draft was succesfully saved")
+            self.main_window.infobar.show()
+        dialog.destroy()
 
     def on_insert_image(self, action, parameter):
         """

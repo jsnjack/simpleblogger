@@ -55,3 +55,11 @@ def wrap_image_url(url):
             image_url=new_url.format(image_size="s0"),
             thumbnail_url=new_url.format(image_size="s450")
             )
+
+
+def generate_filename(string):
+    """
+    Generate save filename from string
+    """
+    keepcharacters = (' ', '.', '_')
+    return "".join(c for c in string if c.isalnum() or c in keepcharacters).rstrip()
