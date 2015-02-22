@@ -250,7 +250,6 @@ class SBWindow(Gtk.ApplicationWindow):
 
 class SBApplication(Gtk.Application):
     config = None
-    active_blog = None
 
     def __init__(self):
         Gtk.Application.__init__(self)
@@ -263,7 +262,6 @@ class SBApplication(Gtk.Application):
         Gtk.Application.do_startup(self)
 
         self.config = load_config()
-        self.active_blog = self.config["active_blog"]
 
         add_account_action = Gio.SimpleAction.new("add_account", None)
         add_account_action.connect("activate", self.add_account_callback)
@@ -501,6 +499,14 @@ class SBApplication(Gtk.Application):
             except:
                 target.set_preview_widget_active(False)
 
+        if not get_blog_by_id(self.config, self.config["active_blog"]):
+            # If can't get blog from config show message
+            self.main_window.infobar.get_content_area().get_children()[0].set_text("No blog is selected")
+            # Hide New button
+            self.main_window.infobar.get_action_area().get_children()[1].props.visible = False
+            self.main_window.infobar.show()
+            return
+
         dialog = Gtk.FileChooserDialog(
             "Please choose an image", self.main_window, Gtk.FileChooserAction.OPEN,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
@@ -543,7 +549,7 @@ class SBApplication(Gtk.Application):
             box.add(spinner)
             spinner.start()
             uploading_thread = PicasaImageThreading(
-                get_blog_by_id(self.config, self.active_blog),
+                get_blog_by_id(self.config, self.config["active_blog"]),
                 image_filename,
                 spinner_dialog
             )
