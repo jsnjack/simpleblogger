@@ -311,28 +311,37 @@ class SBApplication(Gtk.Application):
         """
         Removes current blog
         """
-        blog = get_blog_by_id(self.config, self.config["active_blog"])
-        if blog:
-            # Disable menu item
-            # action = self.lookup_action("select_blog_%s" % self.config["active_blog"])
-            # action.set_enabled(False)
-            index = self.config["blogs"].index(blog)
-            self.config["blogs"].pop(index)
-            self.config["active_blog"] = None
-            header_bar = self.main_window.get_children()[1]
-            subtitle = header_bar.get_custom_title().get_children()[1]
-            subtitle.set_text("")
-            save_config(self.config)
-            # Build menu items
-            self.main_window.select_blog_menu.remove_all()
-            for item in self.config["blogs"]:
-                    # Creat actions and add new item in the menu
-                    self.create_select_blog_action(item["id"])
-                    self.main_window.select_blog_menu.append(item["name"], "app.select_blog_%s" % item["id"])
+        dialog = Gtk.MessageDialog(
+            parent=self.main_window,
+            text="Confirm removing blog",
+            buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+                     Gtk.STOCK_REMOVE, Gtk.ResponseType.OK)
+            )
+        dialog.get_action_area().get_children()[1].get_style_context().add_class("destructive-action")
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            dialog.destroy()
+            blog = get_blog_by_id(self.config, self.config["active_blog"])
+            if blog:
+                index = self.config["blogs"].index(blog)
+                self.config["blogs"].pop(index)
+                self.config["active_blog"] = None
+                header_bar = self.main_window.get_children()[1]
+                subtitle = header_bar.get_custom_title().get_children()[1]
+                subtitle.set_text("")
+                save_config(self.config)
+                # Build menu items
+                self.main_window.select_blog_menu.remove_all()
+                for item in self.config["blogs"]:
+                        # Creat actions and add new item in the menu
+                        self.create_select_blog_action(item["id"])
+                        self.main_window.select_blog_menu.append(item["name"], "app.select_blog_%s" % item["id"])
+            else:
+                self.main_window.infobar.get_content_area().get_children()[0].set_text("No blog to remove")
+                self.main_window.infobar.get_action_area().get_children()[1].props.visible = False
+                self.main_window.infobar.show()
         else:
-            self.main_window.infobar.get_content_area().get_children()[0].set_text("No blog to remove")
-            self.main_window.infobar.get_action_area().get_children()[1].props.visible = False
-            self.main_window.infobar.show()
+            dialog.destroy()
 
     def add_account_callback(self, action, parameter):
         """
