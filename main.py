@@ -96,6 +96,7 @@ class SBWindow(Gtk.ApplicationWindow):
         menumodel.append("Save...", "app.save_draft")
         menumodel.append("Preview...", "app.preview")
         menumodel.append("Add account...", "app.add_account")
+        menumodel.append("Remove current blog", "app.remove_current_blog")
         menumodel.append("Quit", "app.quit")
 
         self.select_blog_menu = Gio.Menu()
@@ -158,23 +159,30 @@ class SBWindow(Gtk.ApplicationWindow):
         Send post to remote server
         """
         blog = get_blog_by_id(self.app.config, self.app.config["active_blog"])
-        if blog["provider"] == "blogger":
-            service = BloggerProvider(blog["username"], blog["password"])
-            tags = self.tag_entry.get_text().split(",")
-            tags = [x.strip() for x in tags]
-            tags = [unicode(x, "utf-8") for x in tags]
-            # Add new tags to the blog
-            new_tags = []
-            for tag in tags:
-                if tag not in blog["tags"]:
-                    new_tags.append(tag)
-            if new_tags:
-                index = self.app.config["blogs"].index(blog)
-                self.app.config["blogs"][index]["tags"].extend(new_tags)
-                save_config(self.app.config)
-        result = service.send_post(blog["id"], self.title_entry.get_text(), self.sourceview.get_buffer().props.text, tags)
-        self.infobar.get_content_area().get_children()[0].set_text(result)
-        self.infobar.show()
+        if blog:
+            if blog["provider"] == "blogger":
+                service = BloggerProvider(blog["username"], blog["password"])
+                tags = self.tag_entry.get_text().split(",")
+                tags = [x.strip() for x in tags]
+                tags = [unicode(x, "utf-8") for x in tags]
+                # Add new tags to the blog
+                new_tags = []
+                for tag in tags:
+                    if tag not in blog["tags"]:
+                        new_tags.append(tag)
+                if new_tags:
+                    index = self.app.config["blogs"].index(blog)
+                    self.app.config["blogs"][index]["tags"].extend(new_tags)
+                    save_config(self.app.config)
+            result = service.send_post(blog["id"], self.title_entry.get_text(), self.sourceview.get_buffer().props.text, tags)
+            self.infobar.get_content_area().get_children()[0].set_text(result)
+            self.infobar.get_action_area().get_children()[1].props.visible = True
+            self.infobar.show()
+        else:
+            self.infobar.get_content_area().get_children()[0].set_text("No blog is selected")
+            # Hide New button
+            self.infobar.get_action_area().get_children()[1].props.visible = False
+            self.infobar.show()
 
     def on_tag_popover_hide(self, target, tag_button):
         """
@@ -267,6 +275,10 @@ class SBApplication(Gtk.Application):
         save_action.connect("activate", self.on_save_draft)
         self.add_action(save_action)
 
+        remove_current_blog_action = Gio.SimpleAction.new("remove_current_blog", None)
+        remove_current_blog_action.connect("activate", self.on_remove_current_blog)
+        self.add_action(remove_current_blog_action)
+
         quit_action = Gio.SimpleAction.new("quit", None)
         quit_action.connect("activate", self.on_quit)
         self.add_action(quit_action)
@@ -287,6 +299,33 @@ class SBApplication(Gtk.Application):
         select_blog_action = Gio.SimpleAction.new("select_blog_%s" % blog_id, None)
         select_blog_action.connect("activate", self.on_select_blog)
         self.add_action(select_blog_action)
+
+    def on_remove_current_blog(self, action, parameter):
+        """
+        Removes current blog
+        """
+        blog = get_blog_by_id(self.config, self.config["active_blog"])
+        if blog:
+            # Disable menu item
+            # action = self.lookup_action("select_blog_%s" % self.config["active_blog"])
+            # action.set_enabled(False)
+            index = self.config["blogs"].index(blog)
+            self.config["blogs"].pop(index)
+            self.config["active_blog"] = None
+            header_bar = self.main_window.get_children()[1]
+            subtitle = header_bar.get_custom_title().get_children()[1]
+            subtitle.set_text("")
+            save_config(self.config)
+            # Build menu items
+            self.main_window.select_blog_menu.remove_all()
+            for item in self.config["blogs"]:
+                    # Creat actions and add new item in the menu
+                    self.create_select_blog_action(item["id"])
+                    self.main_window.select_blog_menu.append(item["name"], "app.select_blog_%s" % item["id"])
+        else:
+            self.main_window.infobar.get_content_area().get_children()[0].set_text("No blog to remove")
+            self.main_window.infobar.get_action_area().get_children()[1].props.visible = False
+            self.main_window.infobar.show()
 
     def add_account_callback(self, action, parameter):
         """
@@ -413,6 +452,7 @@ class SBApplication(Gtk.Application):
                 }
                 pickle.dump(draft_obj, draft_file)
             self.main_window.infobar.get_content_area().get_children()[0].set_text("Draft was succesfully saved")
+            self.main_window.infobar.get_action_area().get_children()[1].props.visible = True
             self.main_window.infobar.show()
         dialog.destroy()
 
