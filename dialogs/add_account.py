@@ -16,6 +16,7 @@ class AddAccountDialog(Gtk.Dialog):
 
         username_entry = Gtk.Entry(placeholder_text=u"Username")
         password_entry = Gtk.Entry(placeholder_text=u"Password")
+        password_entry.set_visibility(False)
         provider_choice = Gtk.ComboBoxText()
         provider_choice.append("blogger", u"Blogger")
 
