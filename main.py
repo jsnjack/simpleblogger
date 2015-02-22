@@ -53,6 +53,7 @@ class SBWindow(Gtk.ApplicationWindow):
         self.set_titlebar(header_bar)
 
         post_button = Gtk.Button()
+        post_button.set_tooltip_text("Publish post")
         post_button.connect("clicked", self.on_post_button_clicked)
         icon = Gio.ThemedIcon(name="document-send-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
@@ -60,6 +61,7 @@ class SBWindow(Gtk.ApplicationWindow):
         header_bar.pack_start(post_button)
 
         tag_button = Gtk.Button()
+        tag_button.set_tooltip_text("Add tags")
         tag_button.get_style_context().add_class("suggested-action")
         self.tag_popover = Gtk.Popover.new(tag_button)
         self.tag_entry = Gtk.Entry()
@@ -72,6 +74,7 @@ class SBWindow(Gtk.ApplicationWindow):
         header_bar.pack_start(tag_button)
 
         insert_button = Gtk.MenuButton()
+        insert_button.set_tooltip_text("Insert image, code")
         icon = Gio.ThemedIcon(name="list-add-symbolic")
         image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
         insert_button.add(image)
