@@ -20,7 +20,21 @@ simpleblogger2 is a blogger.com client written in Python and GTK+ 3 (see [this l
 * python-pygments
 * python-gdata
 
+###How to build RPM file
+* Create rpm-tree with command:
+```bash
+rpmdev-setuptree
+```
+* Build python package with command:
+```bash
+python setup.py sdist
+```
+* Place it into SOURCE folder of rpm tree. Place simpleblogger.spec into SPEC folder of rpm tree
+* Build rpm package:
+```bash
+rpmbuild -v -bb --clean SPECS/simpleblogger.spec
+```
+
 ***
 ![logo](http://www.wingware.com/images/wingware-logo-107x34.png)
 This application was developed with the help of the Wingware IDE (the only one IDE that supports GTK+ autocomplete)
-
