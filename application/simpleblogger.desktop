@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=simpleblogger
+GenericName=simpleblogger
+Comment=Blogger client
+Icon=simpleblogger
+Exec=simpleblogger.py
+Terminal=false
+Type=Application
+Categories=Network;
+StartupNotify=true
