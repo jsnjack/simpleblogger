@@ -1,8 +1,8 @@
 import os
 import pickle
 
-
-CONFIG_PATH = "./config/config.sb"
+CONFIG_DIRECTORY = os.path.join(os.path.expanduser("~"), ".simpleblogger")
+CONFIG_PATH = os.path.join(CONFIG_DIRECTORY, "config.sb")
 IMAGE_WRAP_TEMPLATE_PATH = "./config/image_insertion_template.html"
 
 
@@ -10,6 +10,9 @@ def load_config():
     """
     Reads config from file
     """
+    # Check that config directory exist and create it if it doesn't
+    if not os.path.exists(CONFIG_DIRECTORY):
+        os.makedirs(CONFIG_DIRECTORY)
     try:
         with open(os.path.abspath(CONFIG_PATH), 'rb') as config_file:
             config = pickle.load(config_file)
