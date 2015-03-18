@@ -14,11 +14,10 @@ setup(
 
     url="https://github.com/e-shulitsky/simpleblogger",
 
-    packages=["", "dialogs", "providers", "config", "application"],
+    packages=["simpleblogger", "simpleblogger.dialogs", "simpleblogger.providers"],
 
-    scripts=["simpleblogger.py"],
+    scripts=["simpleblogger/simpleblogger.py"],
     package_data={
-        "config": ["image_insertion_template.html"],
-        "application": ["simpleblogger.png", "simpleblogger.desktop"]
+        "simpleblogger": ["config/image_insertion_template.html", "application/simpleblogger.png", "application/simpleblogger.desktop"],
     }
 )

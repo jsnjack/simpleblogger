@@ -37,10 +37,10 @@ python setup.py build
 
 %install
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
-desktop-file-install %{buildroot}/usr/lib/python2.7/site-packages/application/%{name}.desktop
+desktop-file-install %{buildroot}/usr/lib/python2.7/site-packages/simpleblogger/application/%{name}.desktop
 
 %post
-xdg-icon-resource install --novendor --size 128 /usr/lib/python2.7/site-packages/application/%{name}.png
+xdg-icon-resource install --novendor --size 128 /usr/lib/python2.7/site-packages/simpleblogger/application/%{name}.png
 
 %clean
 rm -rf $RPM_BUILD_ROOT
