@@ -3,6 +3,7 @@ setup.py
 simpleblogger/__init__.py
 simpleblogger/simpleblogger.py
 simpleblogger/utils.py
+simpleblogger/application/simpleblogger
 simpleblogger/application/simpleblogger.desktop
 simpleblogger/application/simpleblogger.png
 simpleblogger/config/image_insertion_template.html
