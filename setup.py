@@ -16,8 +16,12 @@ setup(
 
     packages=["simpleblogger", "simpleblogger.dialogs", "simpleblogger.providers"],
 
-    scripts=["simpleblogger/simpleblogger.py"],
     package_data={
-        "simpleblogger": ["config/image_insertion_template.html", "application/simpleblogger.png", "application/simpleblogger.desktop"],
+        "simpleblogger": [
+            "config/image_insertion_template.html",
+            "application/simpleblogger.png",
+            "application/simpleblogger.desktop",
+            "application/simpleblogger",
+            ],
     }
 )

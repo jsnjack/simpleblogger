@@ -1,0 +1,2 @@
+#!/bin/bash
+python /usr/lib/python2.7/site-packages/simpleblogger/simpleblogger.py

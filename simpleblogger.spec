@@ -36,7 +36,10 @@ blogger.com client written in Python and GTK+ 3
 python setup.py build
 
 %install
+rm -rf ${RPM_BUILD_ROOT}
+mkdir -p ${RPM_BUILD_ROOT}/usr/bin
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
+install -m 755 %{buildroot}/usr/lib/python2.7/site-packages/simpleblogger/application/%{name} ${RPM_BUILD_ROOT}%{_bindir}
 desktop-file-install %{buildroot}/usr/lib/python2.7/site-packages/simpleblogger/application/%{name}.desktop
 
 %post
@@ -48,3 +51,4 @@ rm -rf $RPM_BUILD_ROOT
 %files -f INSTALLED_FILES
 %defattr(-,root,root)
 /usr/share/applications/simpleblogger.desktop
+%attr(755,root,root) %{_bindir}/simpleblogger
