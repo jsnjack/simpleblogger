@@ -35,6 +35,11 @@ python setup.py sdist
 rpmbuild -v -bb --clean SPECS/simpleblogger.spec
 ```
 
+###Development
+Simpleblogger creates `.simpleblogger` folder in your home directory to store configuration.
+There is an option to store configuration data in `.simpleblogger-debug` folder. To activate
+it run `simpleblogger.py` with `-debug` flag
+
 ***
 ![logo](http://www.wingware.com/images/wingware-logo-107x34.png)
 This application was developed with the help of the Wingware IDE (the only one IDE that supports GTK+ autocomplete)

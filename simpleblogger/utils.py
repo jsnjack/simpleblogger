@@ -1,7 +1,8 @@
 import os
 import pickle
 
-CONFIG_DIRECTORY = os.path.join(os.path.expanduser("~"), ".simpleblogger")
+from simpleblogger import CONFIG_DIRECTORY
+
 CONFIG_PATH = os.path.join(CONFIG_DIRECTORY, "config.sb")
 IMAGE_WRAP_TEMPLATE_PATH = os.path.join(CONFIG_DIRECTORY, "image_insertion_template.html")
 

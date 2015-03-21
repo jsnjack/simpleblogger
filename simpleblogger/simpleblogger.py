@@ -8,12 +8,19 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import guess_lexer, get_lexer_by_name
 
+import utils
 from dialogs.add_account import AddAccountDialog
 from dialogs.insert_code import InsertCodeDialog
 from dialogs.preview import PreviewDialog
 from providers.blogger import BloggerProvider
 from providers.picasa import PicasaImageThreading
-from utils import load_config, save_config, get_blog_by_id, wrap_image_url, generate_filename
+
+# Use debug directory
+if sys.argv[-1] == '-d':
+    sys.argv.pop(-1)
+    CONFIG_DIRECTORY = os.path.join(os.path.expanduser("~"), ".simpleblogger-debug")
+else:
+    CONFIG_DIRECTORY = os.path.join(os.path.expanduser("~"), ".simpleblogger")
 
 
 class SBWindow(Gtk.ApplicationWindow):
@@ -170,7 +177,7 @@ class SBWindow(Gtk.ApplicationWindow):
         """
         Send post to remote server
         """
-        blog = get_blog_by_id(self.app.config, self.app.config["active_blog"])
+        blog = utils.get_blog_by_id(self.app.config, self.app.config["active_blog"])
         if blog:
             if blog["provider"] == "blogger":
                 service = BloggerProvider(blog["username"], blog["password"])
@@ -185,7 +192,7 @@ class SBWindow(Gtk.ApplicationWindow):
                 if new_tags:
                     index = self.app.config["blogs"].index(blog)
                     self.app.config["blogs"][index]["tags"].extend(new_tags)
-                    save_config(self.app.config)
+                    utils.save_config(self.app.config)
             result = service.send_post(blog["id"], self.title_entry.get_text(), self.sourceview.get_buffer().props.text, tags)
             self.infobar.get_content_area().get_children()[0].set_text(result)
             self.infobar.get_action_area().get_children()[1].props.visible = True
@@ -233,7 +240,7 @@ class SBWindow(Gtk.ApplicationWindow):
             completion.get_entry().set_position(-1)
             return True
 
-        blog = get_blog_by_id(self.app.config, self.app.config["active_blog"])
+        blog = utils.get_blog_by_id(self.app.config, self.app.config["active_blog"])
 
         liststore = Gtk.ListStore(str)
         if blog:
@@ -264,7 +271,7 @@ class SBApplication(Gtk.Application):
     def do_startup(self):
         Gtk.Application.do_startup(self)
 
-        self.config = load_config()
+        self.config = utils.load_config()
 
         add_account_action = Gio.SimpleAction.new("add_account", None)
         add_account_action.connect("activate", self.add_account_callback)
@@ -325,7 +332,7 @@ class SBApplication(Gtk.Application):
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             dialog.destroy()
-            blog = get_blog_by_id(self.config, self.config["active_blog"])
+            blog = utils.get_blog_by_id(self.config, self.config["active_blog"])
             if blog:
                 index = self.config["blogs"].index(blog)
                 self.config["blogs"].pop(index)
@@ -333,7 +340,7 @@ class SBApplication(Gtk.Application):
                 header_bar = self.main_window.get_children()[1]
                 subtitle = header_bar.get_custom_title().get_children()[1]
                 subtitle.set_text("")
-                save_config(self.config)
+                utils.save_config(self.config)
                 # Build menu items
                 self.main_window.select_blog_menu.remove_all()
                 for item in self.config["blogs"]:
@@ -375,14 +382,14 @@ class SBApplication(Gtk.Application):
                     dialog.destroy()
 
                     for item in data["blogs"]:
-                        if not get_blog_by_id(self.config, item["id"]):
+                        if not utils.get_blog_by_id(self.config, item["id"]):
                             self.config["blogs"].append(item)
                             # Creat actions and add new item in the menu
                             self.create_select_blog_action(item["id"])
                             main_window = self.get_windows()[0]
                             main_window.select_blog_menu.append(item["name"], "app.select_blog_%s" % item["id"])
 
-                    save_config(self.config)
+                    utils.save_config(self.config)
 
                 if data["status"] == "error":
                     error_dialog = Gtk.MessageDialog(parent=dialog, text=data["error"], buttons=(Gtk.STOCK_APPLY, Gtk.ResponseType.OK))
@@ -458,7 +465,7 @@ class SBApplication(Gtk.Application):
         dialog.add_filter(any_filter)
 
         post_title = self.main_window.title_entry.get_text()
-        dialog.set_current_name(generate_filename(post_title) + u".sbd")
+        dialog.set_current_name(utils.generate_filename(post_title) + u".sbd")
         dialog.set_current_folder(os.path.expanduser("~"))
 
         response = dialog.run()
@@ -502,7 +509,7 @@ class SBApplication(Gtk.Application):
             except:
                 target.set_preview_widget_active(False)
 
-        if not get_blog_by_id(self.config, self.config["active_blog"]):
+        if not utils.get_blog_by_id(self.config, self.config["active_blog"]):
             # If can't get blog from config show message
             self.main_window.infobar.get_content_area().get_children()[0].set_text("No blog is selected")
             # Hide New button
@@ -552,7 +559,7 @@ class SBApplication(Gtk.Application):
             box.add(spinner)
             spinner.start()
             uploading_thread = PicasaImageThreading(
-                get_blog_by_id(self.config, self.config["active_blog"]),
+                utils.get_blog_by_id(self.config, self.config["active_blog"]),
                 image_filename,
                 spinner_dialog
             )
@@ -563,7 +570,7 @@ class SBApplication(Gtk.Application):
                 # dialog
                 image_url = spinner_dialog.uploaded_image_link
                 spinner_dialog.destroy()
-                self.main_window.sourceview.get_buffer().insert_at_cursor(wrap_image_url(image_url))
+                self.main_window.sourceview.get_buffer().insert_at_cursor(utils.wrap_image_url(image_url))
             else:
                 # User canceled uploading. Stop thread, close dialog
                 uploading_thread.stop()
@@ -632,8 +639,8 @@ class SBApplication(Gtk.Application):
         Makes blog active
         """
         self.config["active_blog"] = blog_id
-        save_config(self.config)
-        blog = get_blog_by_id(self.config, blog_id)
+        utils.save_config(self.config)
+        blog = utils.get_blog_by_id(self.config, blog_id)
         if blog:
             window = self.get_windows()[0]
             header_bar = window.get_children()[1]
