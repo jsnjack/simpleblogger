@@ -18,7 +18,6 @@ setup(
 
     package_data={
         "simpleblogger": [
-            "config/image_insertion_template.html",
             "application/simpleblogger.png",
             "application/simpleblogger.desktop",
             "application/simpleblogger",

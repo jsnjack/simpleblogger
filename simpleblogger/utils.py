@@ -3,16 +3,33 @@ import pickle
 
 CONFIG_DIRECTORY = os.path.join(os.path.expanduser("~"), ".simpleblogger")
 CONFIG_PATH = os.path.join(CONFIG_DIRECTORY, "config.sb")
-IMAGE_WRAP_TEMPLATE_PATH = "./config/image_insertion_template.html"
+IMAGE_WRAP_TEMPLATE_PATH = os.path.join(CONFIG_DIRECTORY, "image_insertion_template.html")
+
+
+def config_check():
+    """
+    Creates necessay config files if they are empty
+    """
+    # Check that config directory exist and create it if it doesn't
+    if not os.path.exists(CONFIG_DIRECTORY):
+        os.makedirs(CONFIG_DIRECTORY)
+    if not os.path.exists(IMAGE_WRAP_TEMPLATE_PATH):
+        with open(os.path.abspath(IMAGE_WRAP_TEMPLATE_PATH), 'wb') as template_file:
+            template_file.write(
+                """<div class="separator" style="clear: both; text-align: center;">
+    <a href="{image_url}" imageanchor="1" style="margin-left:1em; margin-right:1em">
+        <img border="0" src="{thumbnail_url}"/>
+    </a>
+</div>
+"""
+            )
 
 
 def load_config():
     """
     Reads config from file
     """
-    # Check that config directory exist and create it if it doesn't
-    if not os.path.exists(CONFIG_DIRECTORY):
-        os.makedirs(CONFIG_DIRECTORY)
+    config_check()
     try:
         with open(os.path.abspath(CONFIG_PATH), 'rb') as config_file:
             config = pickle.load(config_file)
