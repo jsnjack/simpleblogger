@@ -419,7 +419,7 @@ class SBApplication(Gtk.Application):
         any_filter.add_pattern("*")
         dialog.add_filter(any_filter)
 
-        dialog.set_current_folder("./drafts/")
+        dialog.set_current_folder(os.path.expanduser("~"))
 
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
@@ -459,7 +459,7 @@ class SBApplication(Gtk.Application):
 
         post_title = self.main_window.title_entry.get_text()
         dialog.set_current_name(generate_filename(post_title) + u".sbd")
-        dialog.set_current_folder("./drafts/")
+        dialog.set_current_folder(os.path.expanduser("~"))
 
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
