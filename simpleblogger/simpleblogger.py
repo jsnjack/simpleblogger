@@ -236,8 +236,9 @@ class SBWindow(Gtk.ApplicationWindow):
         blog = get_blog_by_id(self.app.config, self.app.config["active_blog"])
 
         liststore = Gtk.ListStore(str)
-        for item in blog["tags"]:
-            liststore.append([item])
+        if blog:
+            for item in blog["tags"]:
+                liststore.append([item])
 
         completion = Gtk.EntryCompletion()
         completion.set_model(liststore)
