@@ -38,7 +38,7 @@ rpmbuild -v -bb --clean SPECS/simpleblogger.spec
 ###Development
 Simpleblogger creates `.simpleblogger` folder in your home directory to store configuration.
 There is an option to store configuration data in `.simpleblogger-debug` folder. To activate
-it run `simpleblogger.py` with `-debug` flag
+it run `simpleblogger.py` with `-d` flag
 
 ***
 ![logo](http://www.wingware.com/images/wingware-logo-107x34.png)
