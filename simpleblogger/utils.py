@@ -9,7 +9,7 @@ IMAGE_WRAP_TEMPLATE_PATH = os.path.join(CONFIG_DIRECTORY, "image_insertion_templ
 
 def config_check():
     """
-    Creates necessay config files if they are empty
+    Creates necessary config files if they are empty
     """
     # Check that config directory exist and create it if it doesn't
     if not os.path.exists(CONFIG_DIRECTORY):
