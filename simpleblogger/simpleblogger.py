@@ -582,7 +582,8 @@ class SBApplication(Gtk.Application):
         """
         Insert code block into post
         """
-        dialog = InsertCodeDialog(self.main_window)
+        initial_lexer_name = self.config.get("last_lexer", None)
+        dialog = InsertCodeDialog(self.main_window, initial_lexer_name)
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:
@@ -592,6 +593,9 @@ class SBApplication(Gtk.Application):
             for item in list_model:
                 if item[0] == lexer_verbose_name:
                     lexer_name = item[1]
+                    # Save as the last used
+                    self.config["last_lexer"] = lexer_verbose_name
+                    utils.save_config(self.config)
                     break
             code = dialog.get_content_area().get_children()[1].get_buffer().props.text
 

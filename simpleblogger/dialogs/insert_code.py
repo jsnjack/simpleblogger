@@ -3,7 +3,7 @@ from pygments.lexers import get_all_lexers
 
 
 class InsertCodeDialog(Gtk.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, initial_lexer_name=None):
         Gtk.Dialog.__init__(self, "Insert code", parent, 0, use_header_bar=True,
                             buttons=(Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
         self.set_modal(True)
@@ -24,6 +24,9 @@ class InsertCodeDialog(Gtk.Dialog):
         completion.set_text_column(0)
         combobox_entry.set_completion(completion)
         combobox_entry.set_placeholder_text("Select language")
+
+        if initial_lexer_name:
+            combobox_entry.set_text(initial_lexer_name)
 
         # Fill combobox with languages
         for item in get_all_lexers():
