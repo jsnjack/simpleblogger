@@ -54,4 +54,5 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/simpleblogger
 
 %changelog
-* Save latest used language for code insert dialog
+* Thu May 21 2015 Yauhen Shulitski <jsnjack@gmail.com> 2.0.1-1
+- Save latest used language for code insert dialog
