@@ -1,6 +1,6 @@
 %define name simpleblogger
-%define version 2.0
-%define unmangled_version 2.0
+%define version 2.0.1
+%define unmangled_version 2.0.1
 %define release 1
 
 Summary: blogger.com client written in Python and GTK+ 3
@@ -52,3 +52,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 /usr/share/applications/simpleblogger.desktop
 %attr(755,root,root) %{_bindir}/simpleblogger
+
+%changelog
+* Save latest used language for code insert dialog
