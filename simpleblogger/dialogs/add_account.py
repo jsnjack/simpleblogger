@@ -4,7 +4,7 @@ from gi.repository import Gtk
 class AddAccountDialog(Gtk.Dialog):
     def __init__(self, parent):
         Gtk.Dialog.__init__(self, "Add account", parent, 0, use_header_bar=True,
-                            buttons=(Gtk.STOCK_APPLY, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+                            buttons=("_Apply", Gtk.ResponseType.OK, "_Cancel", Gtk.ResponseType.CANCEL))
         self.set_modal(True)
 
         # Set focus to cancel button (so that placeholder text will be visible)

@@ -5,7 +5,7 @@ from pygments.lexers import get_all_lexers
 class InsertCodeDialog(Gtk.Dialog):
     def __init__(self, parent, initial_lexer_name=None):
         Gtk.Dialog.__init__(self, "Insert code", parent, 0, use_header_bar=True,
-                            buttons=(Gtk.STOCK_OK, Gtk.ResponseType.OK, Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL))
+                            buttons=("_OK", Gtk.ResponseType.OK, "_Cancel", Gtk.ResponseType.CANCEL))
         self.set_modal(True)
         self.set_default_size(500, 350)
 

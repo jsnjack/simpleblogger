@@ -140,8 +140,8 @@ class SBWindow(Gtk.ApplicationWindow):
         self.infobar = Gtk.InfoBar()
         self.infobar.props.no_show_all = True
         self.infobar.props.expand = False
-        self.infobar.add_button(Gtk.STOCK_NEW, Gtk.ResponseType.APPLY)
-        self.infobar.add_button(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE)
+        self.infobar.add_button("_New", Gtk.ResponseType.APPLY)
+        self.infobar.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.infobar.set_default_response(Gtk.ResponseType.CLOSE)
         self.infobar.connect("response", self.on_infobar_response)
         infobar_label = Gtk.Label("InfoBar example")
@@ -325,9 +325,11 @@ class SBApplication(Gtk.Application):
         dialog = Gtk.MessageDialog(
             parent=self.main_window,
             text="Confirm removing blog",
-            buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                     Gtk.STOCK_REMOVE, Gtk.ResponseType.OK)
+            buttons=(
+                "_Cancel", Gtk.ResponseType.CANCEL,
+                "_Remove", Gtk.ResponseType.OK
             )
+        )
         dialog.get_action_area().get_children()[1].get_style_context().add_class("destructive-action")
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
@@ -375,7 +377,7 @@ class SBApplication(Gtk.Application):
                     message = "<b>Following blogs will be added:</b> \n"
                     for item in data["blogs"]:
                         message = message + item["name"] + "\n"
-                    ok_dialog = Gtk.MessageDialog(parent=dialog, text=message, buttons=(Gtk.STOCK_APPLY, Gtk.ResponseType.OK),
+                    ok_dialog = Gtk.MessageDialog(parent=dialog, text=message, buttons=("_Apply", Gtk.ResponseType.OK),
                                                   use_markup=True)
                     ok_dialog.run()
                     ok_dialog.destroy()
@@ -392,7 +394,7 @@ class SBApplication(Gtk.Application):
                     utils.save_config(self.config)
 
                 if data["status"] == "error":
-                    error_dialog = Gtk.MessageDialog(parent=dialog, text=data["error"], buttons=(Gtk.STOCK_APPLY, Gtk.ResponseType.OK))
+                    error_dialog = Gtk.MessageDialog(parent=dialog, text=data["error"], buttons=("_Apply", Gtk.ResponseType.OK))
                     error_dialog.run()
                     error_dialog.destroy()
                     run_dialog(dialog)
@@ -408,8 +410,8 @@ class SBApplication(Gtk.Application):
         """
         dialog = Gtk.FileChooserDialog(
             "Open draft", self.main_window, Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-             Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+            ("_Cancel", Gtk.ResponseType.CANCEL,
+             "_Open", Gtk.ResponseType.OK)
         )
 
         open_button = dialog.get_header_bar().get_children()[1]
@@ -446,8 +448,8 @@ class SBApplication(Gtk.Application):
         """
         dialog = Gtk.FileChooserDialog(
             "Save draft", self.main_window, Gtk.FileChooserAction.SAVE,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-             Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
+            ("_Cancel", Gtk.ResponseType.CANCEL,
+             "_Save", Gtk.ResponseType.OK)
         )
 
         save_button = dialog.get_header_bar().get_children()[1]
@@ -519,8 +521,8 @@ class SBApplication(Gtk.Application):
 
         dialog = Gtk.FileChooserDialog(
             "Please choose an image", self.main_window, Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-             Gtk.STOCK_ADD, Gtk.ResponseType.OK)
+            ("_Cancel", Gtk.ResponseType.CANCEL,
+             "_Add", Gtk.ResponseType.OK)
         )
         dialog.set_current_folder(os.path.join(os.path.expanduser('~'), 'Pictures'))
 
@@ -551,7 +553,7 @@ class SBApplication(Gtk.Application):
             # Show spinner
             spinner_dialog = Gtk.MessageDialog(
                 parent=self.main_window, text="Wait until your image is uploaded",
-                buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+                buttons=("_Cancel", Gtk.ResponseType.CANCEL)
             )
             box = spinner_dialog.get_content_area()
             spinner = Gtk.Spinner()
