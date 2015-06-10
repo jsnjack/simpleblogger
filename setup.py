@@ -21,6 +21,6 @@ setup(
             "application/simpleblogger.png",
             "application/simpleblogger.desktop",
             "application/simpleblogger",
-            ],
+        ],
     }
 )
