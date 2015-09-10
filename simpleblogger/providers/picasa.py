@@ -1,7 +1,8 @@
 import threading
+from gdata.photos.service import PhotosService
 from gi.repository import Gtk
 
-from providers.blogger import BloggerProvider
+from providers.google import load_credentials
 
 
 class PicasaImageThreading(threading.Thread):
@@ -16,18 +17,27 @@ class PicasaImageThreading(threading.Thread):
         self._stop = threading.Event()
 
     def run(self):
+        credentials = load_credentials(self.blog["email"])
         # Login to Picasa
-        provider = BloggerProvider(self.blog["username"], self.blog["password"])
-        albums, client = provider.login_picasa()
+        client = PhotosService(
+            source="simpleblogger",
+            email=self.blog["email"],
+            additional_headers={'Authorization': 'Bearer %s' % credentials.access_token}
+        )
+        albums = client.GetUserFeed(user=self.blog["email"])
 
         # Finding album and post photo
         for item in albums.entry:
             if self.blog["name"] == unicode(item.title.text, 'utf-8'):
-                album_url = '/data/feed/api/user/' + self.blog["username"]
+                album_url = '/data/feed/api/user/' + self.blog["email"]
                 album_url = album_url + '/albumid/'
                 album_url = album_url + item.gphoto_id.text
                 image_name = self.filename.split("/")[-1]
-                photo = provider.upload_photo(client, album_url, image_name, self.filename)
+                photo = client.InsertPhotoSimple(
+                    album_url,
+                    image_name,
+                    image_name,
+                    self.filename)
                 self.dialog.uploaded_image_link = photo.content.src
                 self.dialog.emit("response", Gtk.ResponseType.OK)
 

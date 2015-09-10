@@ -1,4 +1,7 @@
 from gi.repository import Gtk
+from webbrowser import open as open_page
+
+from providers.google import get_authorization_url
 
 
 class AddAccountDialog(Gtk.Dialog):
@@ -14,18 +17,21 @@ class AddAccountDialog(Gtk.Dialog):
         apply_button = self.get_header_bar().get_children()[1]
         apply_button.get_style_context().add_class("suggested-action")
 
-        username_entry = Gtk.Entry(placeholder_text=u"Username")
-        password_entry = Gtk.Entry(placeholder_text=u"Password")
-        password_entry.set_visibility(False)
-        provider_choice = Gtk.ComboBoxText()
-        provider_choice.append("blogger", u"Blogger")
+        self.email_entry = Gtk.Entry(placeholder_text=u"Email")
+
+        auth_link_button = Gtk.Button("Authenticate simpleblogger (in browser)")
+        auth_link_button.connect("clicked", self.on_auth_link_button_clicked)
+
+        code_entry = Gtk.Entry(placeholder_text=u"Authentication code from the browser")
 
         box = self.get_content_area()
-        box.add(username_entry)
-        box.add(password_entry)
-        box.add(provider_choice)
+        box.add(self.email_entry)
+        box.add(auth_link_button)
+        box.add(code_entry)
 
         box.set_spacing(5)
-        provider_choice.set_active_id("blogger")
 
         self.show_all()
+
+    def on_auth_link_button_clicked(self, target):
+        open_page(get_authorization_url(self.email_entry.get_text()))

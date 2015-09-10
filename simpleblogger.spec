@@ -1,6 +1,6 @@
 %define name simpleblogger
-%define version 2.0.1
-%define unmangled_version 2.0.1
+%define version 2.1
+%define unmangled_version 2.1
 %define release 1
 
 Summary: blogger.com client written in Python and GTK+ 3
@@ -24,6 +24,7 @@ Requires: gobject-introspection >= 1.42.0
 Requires: pygobject3 >= 3.14.0
 Requires: python-pip >= 7.0
 Requires: python-pygments >= 1.6
+Requires: python-keyring >= 5.0
 
 
 %description
@@ -55,5 +56,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/simpleblogger
 
 %changelog
+* Thu Sep 10 2015 Yauhen Shulitski <jsnjack@gmail.com> 2.1-1
+- Update application to use Oauth2 for google services
 * Thu May 21 2015 Yauhen Shulitski <jsnjack@gmail.com> 2.0.1-1
 - Save latest used language for code insert dialog
