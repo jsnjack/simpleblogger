@@ -45,7 +45,7 @@ desktop-file-install %{buildroot}/usr/lib/python2.7/site-packages/simpleblogger/
 
 %post
 xdg-icon-resource install --novendor --size 128 /usr/lib/python2.7/site-packages/simpleblogger/application/%{name}.png
-pip install google-api-python-client==1.4.0
+pip install google-api-python-client>=1.4.0
 
 %clean
 rm -rf $RPM_BUILD_ROOT
