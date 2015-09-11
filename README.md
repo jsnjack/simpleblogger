@@ -16,9 +16,11 @@ simpleblogger2 is a blogger.com client written in Python and GTK+ 3 (see [this l
 ![ScreenShot](https://raw.githubusercontent.com/e-shulitsky/simpleblogger/master/screenshots/simpleblogger2.png)
 
 ###Dependencies
-* pygobjects3
+* gobject-introspection
+* pygobject3
 * python-pygments
-* python-gdata
+* python-keyring
+* google-api-python-client
 
 ###How to build RPM file
 * Create rpm-tree with command:
@@ -32,7 +34,7 @@ python setup.py sdist
 * Place it into SOURCE folder of rpm tree. Place simpleblogger.spec into SPEC folder of rpm tree
 * Build rpm package:
 ```bash
-rpmbuild -v -bb --clean SPECS/simpleblogger.spec
+rpmbuild -v -bs --clean SPECS/simpleblogger.spec
 ```
 
 ###Development
