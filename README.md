@@ -15,6 +15,10 @@ simpleblogger2 is a blogger.com client written in Python and GTK+ 3 (see [this l
 ###Screenshots
 ![ScreenShot](https://raw.githubusercontent.com/e-shulitsky/simpleblogger/master/screenshots/simpleblogger2.png)
 
+###How to install
+* Fedora, CentOS, RedHat:
+  Visit https://copr.fedoraproject.org/coprs/jsnjack/simpleblogger/ for instructions
+
 ###Dependencies
 * gobject-introspection
 * pygobject3

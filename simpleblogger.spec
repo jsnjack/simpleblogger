@@ -22,7 +22,7 @@ BuildRequires: xdg-utils
 
 Requires: gobject-introspection >= 1.42.0
 Requires: pygobject3 >= 3.14.0
-Requires: python-pip >= 7.0
+Requires: python-pip >= 6.0
 Requires: python-pygments >= 1.6
 Requires: python-keyring >= 5.0
 
