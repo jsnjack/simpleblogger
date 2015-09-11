@@ -1,7 +1,7 @@
 %define name simpleblogger
 %define version 2.1
 %define unmangled_version 2.1
-%define release 2
+%define release 4
 
 Summary: blogger.com client written in Python and GTK+ 3
 Name: %{name}

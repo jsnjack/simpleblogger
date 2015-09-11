@@ -1,10 +1,11 @@
 import httplib2
+import os
 from apiclient.discovery import build
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 from oauth2client.keyring_storage import Storage
 
 
-CLIENTSECRET_LOCATION = "./providers/client_secret.json"
+CLIENTSECRET_LOCATION = os.path.dirname(os.path.realpath(__file__)) + "/client_secret.json"
 REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"
 
 SCOPES = [
