@@ -11,5 +11,5 @@ simpleblogger/dialogs/add_account.py
 simpleblogger/dialogs/insert_code.py
 simpleblogger/dialogs/preview.py
 simpleblogger/providers/__init__.py
-simpleblogger/providers/blogger.py
+simpleblogger/providers/google.py
 simpleblogger/providers/picasa.py

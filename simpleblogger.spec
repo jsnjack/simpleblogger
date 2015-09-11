@@ -42,10 +42,10 @@ mkdir -p ${RPM_BUILD_ROOT}/usr/bin
 python setup.py install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 install -m 755 %{buildroot}/usr/lib/python2.7/site-packages/simpleblogger/application/%{name} ${RPM_BUILD_ROOT}%{_bindir}
 desktop-file-install %{buildroot}/usr/lib/python2.7/site-packages/simpleblogger/application/%{name}.desktop
-pip install google-api-python-client==1.4.0
 
 %post
 xdg-icon-resource install --novendor --size 128 /usr/lib/python2.7/site-packages/simpleblogger/application/%{name}.png
+pip install google-api-python-client==1.4.0
 
 %clean
 rm -rf $RPM_BUILD_ROOT
