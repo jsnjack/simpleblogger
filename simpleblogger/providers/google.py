@@ -1,6 +1,6 @@
 import httplib2
 from apiclient.discovery import build
-from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 from oauth2client.keyring_storage import Storage
 
 
@@ -46,31 +46,20 @@ def save_credentials(credentials, email):
 
 def get_credentials(authorization_code):
     """
-    Exchange an authorization code for OAuth 2.0 credentials.
-
-    Args:
-      authorization_code: Authorization code to exchange for OAuth 2.0
-                          credentials.
-    Returns:
-      oauth2client.client.OAuth2Credentials instance.
-    Raises:
-      CodeExchangeException: an error occurred.
+    Exchange an authorization code for OAuth 2.0 credentials
     """
     flow = flow_from_clientsecrets(CLIENTSECRET_LOCATION, ' '.join(SCOPES))
     flow.redirect_uri = REDIRECT_URI
-    credentials = flow.step2_exchange(authorization_code)
+    try:
+        credentials = flow.step2_exchange(authorization_code)
+    except FlowExchangeError:
+        credentials = None
     return credentials
 
 
 def get_user_info(credentials):
     """
     Send a request to the UserInfo API to retrieve the user's information.
-
-    Args:
-      credentials: oauth2client.client.OAuth2Credentials instance to authorize the
-                   request.
-    Returns:
-      User information as a dict.
     """
     user_info_service = build(
         serviceName='oauth2', version='v2',

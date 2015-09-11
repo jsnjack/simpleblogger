@@ -368,13 +368,18 @@ class SBApplication(Gtk.Application):
             Recreates dialog loop
             """
             response = dialog.run()
+            error = u"No blogs associated with the account"
             if response == Gtk.ResponseType.OK:
                 content_widgets = dialog.get_content_area().get_children()
                 code = content_widgets[2].get_text()
                 credentials = get_credentials(code)
-                email = get_user_info(credentials).get("email")
-                service = create_service(credentials, "blogger")
-                blogs = get_blogs(service, email)
+                if credentials:
+                    email = get_user_info(credentials).get("email")
+                    service = create_service(credentials, "blogger")
+                    blogs = get_blogs(service, email)
+                else:
+                    blogs = None
+                    error = u"Can't exchange code for credentials"
                 if blogs:
                     message = "<b>Following blogs will be added:</b> \n"
                     for item in blogs:
@@ -397,7 +402,7 @@ class SBApplication(Gtk.Application):
                     save_credentials(credentials, email)
                 else:
                     error_dialog = Gtk.MessageDialog(
-                        parent=dialog, text="No blogs", buttons=("_Apply", Gtk.ResponseType.OK)
+                        parent=dialog, text=error, buttons=("_Close", Gtk.ResponseType.OK)
                     )
                     error_dialog.run()
                     error_dialog.destroy()
