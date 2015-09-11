@@ -1,3 +1,22 @@
+"""
+Config looks like:
+{
+    "blogs": [
+        {
+            "id": 12345,
+            "name": "My blog",
+            "email": "jsnjack@gmail.com",
+            "link": "myblog.blogspot.com",
+            "tags": [
+                "banana",
+                "zorro"
+            ]
+        }
+    ],
+    "active_blog": 12345
+}
+"""
+
 import os
 import pickle
 

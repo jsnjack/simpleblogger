@@ -12,7 +12,7 @@ import utils
 from dialogs.add_account import AddAccountDialog
 from dialogs.insert_code import InsertCodeDialog
 from dialogs.preview import PreviewDialog
-from providers.blogger import BloggerProvider
+from providers.google import get_credentials, get_user_info, create_service, get_blogs, save_credentials, publish_post
 from providers.picasa import PicasaImageThreading
 
 # Use debug directory
@@ -179,22 +179,25 @@ class SBWindow(Gtk.ApplicationWindow):
         """
         blog = utils.get_blog_by_id(self.app.config, self.app.config["active_blog"])
         if blog:
-            if blog["provider"] == "blogger":
-                service = BloggerProvider(blog["username"], blog["password"])
-                tags = self.tag_entry.get_text().split(",")
-                tags = [x.strip() for x in tags]
-                tags = [unicode(x, "utf-8") for x in tags]
-                # Add new tags to the blog
-                new_tags = []
-                for tag in tags:
-                    if tag not in blog["tags"]:
-                        new_tags.append(tag)
-                if new_tags:
-                    index = self.app.config["blogs"].index(blog)
-                    self.app.config["blogs"][index]["tags"].extend(new_tags)
-                    utils.save_config(self.app.config)
-            result = service.send_post(blog["id"], self.title_entry.get_text(), self.sourceview.get_buffer().props.text, tags)
-            self.infobar.get_content_area().get_children()[0].set_text(result)
+            tags = self.tag_entry.get_text().split(",")
+            tags = [x.strip() for x in tags]
+            tags = [unicode(x, "utf-8") for x in tags]
+            # Add new tags to the blog
+            new_tags = []
+            for tag in tags:
+                if tag not in blog["tags"]:
+                    new_tags.append(tag)
+            if new_tags:
+                index = self.app.config["blogs"].index(blog)
+                self.app.config["blogs"][index]["tags"].extend(new_tags)
+                utils.save_config(self.app.config)
+            publish_post(
+                blog,
+                self.title_entry.get_text(),
+                self.sourceview.get_buffer().props.text,
+                tags
+            )
+            self.infobar.get_content_area().get_children()[0].set_text("Published")
             self.infobar.get_action_area().get_children()[1].props.visible = True
             self.infobar.show()
         else:
@@ -365,17 +368,21 @@ class SBApplication(Gtk.Application):
             Recreates dialog loop
             """
             response = dialog.run()
+            error = u"No blogs associated with the account"
             if response == Gtk.ResponseType.OK:
                 content_widgets = dialog.get_content_area().get_children()
-                username = content_widgets[0].get_text()
-                password = content_widgets[1].get_text()
-                provider = content_widgets[2].get_active_id()
-                if provider == "blogger":
-                    service = BloggerProvider(username, password)
-                data = service.get_blogs()
-                if data["status"] == "ok":
+                code = content_widgets[2].get_text()
+                credentials = get_credentials(code)
+                if credentials:
+                    email = get_user_info(credentials).get("email")
+                    service = create_service(credentials, "blogger")
+                    blogs = get_blogs(service, email)
+                else:
+                    blogs = None
+                    error = u"Can't exchange code for credentials"
+                if blogs:
                     message = "<b>Following blogs will be added:</b> \n"
-                    for item in data["blogs"]:
+                    for item in blogs:
                         message = message + item["name"] + "\n"
                     ok_dialog = Gtk.MessageDialog(parent=dialog, text=message, buttons=("_Apply", Gtk.ResponseType.OK),
                                                   use_markup=True)
@@ -383,7 +390,7 @@ class SBApplication(Gtk.Application):
                     ok_dialog.destroy()
                     dialog.destroy()
 
-                    for item in data["blogs"]:
+                    for item in blogs:
                         if not utils.get_blog_by_id(self.config, item["id"]):
                             self.config["blogs"].append(item)
                             # Creat actions and add new item in the menu
@@ -392,9 +399,11 @@ class SBApplication(Gtk.Application):
                             main_window.select_blog_menu.append(item["name"], "app.select_blog_%s" % item["id"])
 
                     utils.save_config(self.config)
-
-                if data["status"] == "error":
-                    error_dialog = Gtk.MessageDialog(parent=dialog, text=data["error"], buttons=("_Apply", Gtk.ResponseType.OK))
+                    save_credentials(credentials, email)
+                else:
+                    error_dialog = Gtk.MessageDialog(
+                        parent=dialog, text=error, buttons=("_Close", Gtk.ResponseType.OK)
+                    )
                     error_dialog.run()
                     error_dialog.destroy()
                     run_dialog(dialog)
