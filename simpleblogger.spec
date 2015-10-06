@@ -1,7 +1,7 @@
 %define name simpleblogger
-%define version 2.1
-%define unmangled_version 2.1
-%define release 4
+%define version 2.1.1
+%define unmangled_version 2.1.1
+%define release 1
 
 Summary: blogger.com client written in Python and GTK+ 3
 Name: %{name}
@@ -56,6 +56,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/simpleblogger
 
 %changelog
+* Tue Oct 6 2015 Yauhen Shulitski <jsnjack@gmail.com> 2.1.1-1
+- Refresh access token when uploading images to picasa
 * Thu Sep 10 2015 Yauhen Shulitski <jsnjack@gmail.com> 2.1-1
 - Update application to use Oauth2 for google services
 * Thu May 21 2015 Yauhen Shulitski <jsnjack@gmail.com> 2.0.1-1
