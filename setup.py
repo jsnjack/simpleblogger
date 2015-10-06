@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name="simpleblogger",
-    version="2.1.1",
+    version="2.1.2",
     description="blogger.com client written in Python and GTK+ 3",
 
     license='MIT',

@@ -31,10 +31,16 @@ def get_authorization_url(email_address, state=None):
 
 def load_credentials(email):
     """
-    Load credentials for user with email
+    Load credentials for user with email. Access token is refreshed when needed
     """
     storage = Storage("simpleblogger", email)
-    return storage.get()
+    credentials = storage.get()
+    if credentials.access_token_expired:
+        http = httplib2.Http()
+        http = credentials.authorize(http)
+        credentials.refresh(http)
+        save_credentials(credentials, email)
+    return credentials
 
 
 def save_credentials(credentials, email):
@@ -71,21 +77,12 @@ def get_user_info(credentials):
         return user_info
 
 
-def get_connection(credentials):
-    """
-    Returns authorized connection. Updates access code using refresh code
-    when it is needed
-    """
-    http = httplib2.Http()
-    http = credentials.authorize(http)
-    return http
-
-
 def create_service(credentials, name, version='v3'):
     """
     Returns service object
     """
-    http = get_connection(credentials)
+    http = httplib2.Http()
+    http = credentials.authorize(http)
     return build(name, version, http=http)
 
 
