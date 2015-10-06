@@ -71,12 +71,21 @@ def get_user_info(credentials):
         return user_info
 
 
+def get_connection(credentials):
+    """
+    Returns authorized connection. Updates access code using refresh code
+    when it is needed
+    """
+    http = httplib2.Http()
+    http = credentials.authorize(http)
+    return http
+
+
 def create_service(credentials, name, version='v3'):
     """
     Returns service object
     """
-    http = httplib2.Http()
-    http = credentials.authorize(http)
+    http = get_connection(credentials)
     return build(name, version, http=http)
 
 

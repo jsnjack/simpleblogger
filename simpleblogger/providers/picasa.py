@@ -2,7 +2,7 @@ import threading
 from gdata.photos.service import PhotosService
 from gi.repository import Gtk
 
-from providers.google import load_credentials
+from providers.google import load_credentials, get_connection
 
 
 class PicasaImageThreading(threading.Thread):
@@ -18,6 +18,9 @@ class PicasaImageThreading(threading.Thread):
 
     def run(self):
         credentials = load_credentials(self.blog["email"])
+        # Update access token
+        if credentials.access_token_expired:
+            get_connection(credentials)
         # Login to Picasa
         client = PhotosService(
             source="simpleblogger",
