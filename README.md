@@ -1,9 +1,9 @@
 simpleblogger2
 =============
-###What is it?
+### What is it?
 simpleblogger2 is a blogger.com client written in Python and GTK+ 3 (see [this link](http://sourceforge.net/projects/simpleblogger/) for old version)
 
-###Features list
+### Features list
 * HTML syntax highlight
 * Uploading images to the hosting service (picasa)
 * Drafts
@@ -12,21 +12,21 @@ simpleblogger2 is a blogger.com client written in Python and GTK+ 3 (see [this l
 * Automatically adds all your blogs from Google account
 * Post preview
 
-###Screenshots
+### Screenshots
 ![ScreenShot](https://raw.githubusercontent.com/e-shulitsky/simpleblogger/master/screenshots/simpleblogger2.png)
 
-###How to install
+### How to install
 * Fedora, CentOS, RedHat:
   Visit https://copr.fedoraproject.org/coprs/jsnjack/simpleblogger/ for instructions
 
-###Dependencies
+### Dependencies
 * gobject-introspection
 * pygobject3
 * python-pygments
 * python-keyring
 * google-api-python-client
 
-###How to build RPM file
+### How to build RPM file
 * Create rpm-tree with command:
 ```bash
 rpmdev-setuptree
@@ -41,7 +41,7 @@ python setup.py sdist
 rpmbuild -v -bs --clean SPECS/simpleblogger.spec
 ```
 
-###Development
+### Development
 Simpleblogger creates `.simpleblogger` folder in your home directory to store configuration.
 There is an option to store configuration data in `.simpleblogger-debug` folder. To activate
 it run `simpleblogger.py` with `-d` flag

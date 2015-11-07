@@ -447,7 +447,8 @@ class SBApplication(Gtk.Application):
                 self.main_window.title_entry.set_text(draft_obj["title"])
                 self.main_window.sourceview.get_buffer().props.text = draft_obj["body"]
                 if draft_obj["tags"]:
-                    self.main_window.tag_entry.get_parent().get_relative_to().get_style_context().remove_class("suggested-action")
+                    self.main_window.tag_entry.get_parent().get_relative_to().get_style_context().remove_class(
+                        "suggested-action")
                 self.main_window.tag_entry.set_text(draft_obj["tags"])
         dialog.destroy()
 
