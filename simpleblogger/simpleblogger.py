@@ -1,19 +1,24 @@
 #!/usr/bin/env python2
+import gi
 import os
 import pickle
 import sys
 
+gi.require_version('Gtk', '3.0')
+gi.require_version('GtkSource', '3.0')
 from gi.repository import Gtk, Gio, GtkSource, GdkPixbuf
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import guess_lexer, get_lexer_by_name
 
 import utils
+
 from dialogs.add_account import AddAccountDialog
 from dialogs.insert_code import InsertCodeDialog
 from dialogs.preview import PreviewDialog
 from providers.google import get_credentials, get_user_info, create_service, get_blogs, save_credentials, publish_post
 from providers.picasa import PicasaImageThreading
+
 
 # Use debug directory
 if sys.argv[-1] == '-d':

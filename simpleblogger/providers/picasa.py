@@ -1,4 +1,7 @@
+import gi
 import threading
+
+gi.require_version('Gtk', '3.0')
 from gdata.photos.service import PhotosService
 from gi.repository import Gtk
 
