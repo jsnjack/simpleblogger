@@ -1,8 +1,9 @@
 import httplib2
 import os
+
 from apiclient.discovery import build
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
-from oauth2client.keyring_storage import Storage
+from storage import Storage
 
 
 CLIENTSECRET_LOCATION = os.path.dirname(os.path.realpath(__file__)) + "/client_secret.json"
