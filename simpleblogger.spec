@@ -25,6 +25,7 @@ Requires: pygobject3 >= 3.14.0
 Requires: python-pip >= 6.0
 Requires: python-pygments >= 1.6
 Requires: python-keyring >= 5.0
+Requires: python-gdata >= 2.0.18
 
 
 %description
