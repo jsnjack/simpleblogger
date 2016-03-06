@@ -11,6 +11,16 @@ class InsertCodeDialog(Gtk.Dialog):
                             buttons=("_OK", Gtk.ResponseType.OK, "_Cancel", Gtk.ResponseType.CANCEL))
         self.set_modal(True)
         self.set_default_size(500, 350)
+        self.set_resizable(True)
+        self.set_size_request(-1, 200)
+
+        box = self.get_content_area()
+
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+
+        scroll_box = Gtk.VBox()
+        scroll_box.props.homogeneous = False
 
         cancel_button = self.get_header_bar().get_children()[0]
         self.set_focus(cancel_button)
@@ -19,7 +29,6 @@ class InsertCodeDialog(Gtk.Dialog):
         ok_button.set_name("Insert")
         ok_button.get_style_context().add_class("suggested-action")
 
-        box = self.get_content_area()
         combobox = Gtk.ComboBoxText.new_with_entry()
         combobox_entry = combobox.get_child()
         completion = Gtk.EntryCompletion()
@@ -34,10 +43,14 @@ class InsertCodeDialog(Gtk.Dialog):
         # Fill combobox with languages
         for item in get_all_lexers():
             combobox.append(item[1][0], item[0])
-        box.add(combobox)
 
         textview = Gtk.TextView()
         textview.props.expand = True
-        box.add(textview)
+
+        scroll_box.pack_start(combobox, False, False, 0)
+        scroll_box.pack_end(textview, True, True, 0)
+        scrolled_window.add(scroll_box)
+
+        box.add(scrolled_window)
 
         self.show_all()
