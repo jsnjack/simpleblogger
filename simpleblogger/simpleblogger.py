@@ -647,9 +647,7 @@ class SBApplication(Gtk.Application):
         """
         Open preview dialog
         """
-        dialog = PreviewDialog(self.main_window)
-        dialog.run()
-        dialog.destroy()
+        PreviewDialog(self.main_window)
 
     def on_select_blog(self, action, parameter):
         """
