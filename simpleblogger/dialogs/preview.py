@@ -6,9 +6,9 @@ from gi.repository import Gtk, WebKit2, Gio
 from pygments.formatters import HtmlFormatter
 
 
-class PreviewDialog(Gtk.Window):
+class PreviewWindow(Gtk.Window):
     def __init__(self, parent):
-        super(PreviewDialog, self).__init__(title="Preview")
+        super(PreviewWindow, self).__init__(title="Preview")
         self.parent = parent
         self.set_default_size(800, 600)
 

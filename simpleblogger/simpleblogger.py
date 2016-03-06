@@ -15,7 +15,7 @@ import utils
 
 from dialogs.add_account import AddAccountDialog
 from dialogs.insert_code import InsertCodeDialog
-from dialogs.preview import PreviewDialog
+from dialogs.preview import PreviewWindow
 from providers.google import get_credentials, get_user_info, create_service, get_blogs, save_credentials, publish_post
 from providers.picasa import PicasaImageThreading
 
@@ -647,7 +647,7 @@ class SBApplication(Gtk.Application):
         """
         Open preview dialog
         """
-        PreviewDialog(self.main_window)
+        PreviewWindow(self.main_window)
 
     def on_select_blog(self, action, parameter):
         """
