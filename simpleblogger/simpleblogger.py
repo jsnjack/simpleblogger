@@ -605,8 +605,11 @@ class SBApplication(Gtk.Application):
 
         if response == Gtk.ResponseType.OK:
             lexer_name = None
-            lexer_verbose_name = dialog.get_content_area().get_children()[0].get_active_text()
-            list_model = dialog.get_content_area().get_children()[0].get_model()
+            # Dialog > Box > ScrolledWindow > Viewport > VBox > ComboBoxText & TextView
+            combobox = dialog.get_content_area().get_children()[0].get_children()[0].get_children()[0].get_children()[0]
+            text_view = dialog.get_content_area().get_children()[0].get_children()[0].get_children()[0].get_children()[1]
+            lexer_verbose_name = combobox.get_active_text()
+            list_model = combobox.get_model()
             for item in list_model:
                 if item[0] == lexer_verbose_name:
                     lexer_name = item[1]
@@ -614,7 +617,7 @@ class SBApplication(Gtk.Application):
                     self.config["last_lexer"] = lexer_verbose_name
                     utils.save_config(self.config)
                     break
-            code = dialog.get_content_area().get_children()[1].get_buffer().props.text
+            code = text_view.get_buffer().props.text
 
             dialog.destroy()
 
