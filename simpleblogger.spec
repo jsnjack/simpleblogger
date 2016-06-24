@@ -1,6 +1,6 @@
 %define name simpleblogger
-%define version 2.3
-%define unmangled_version 2.3
+%define version 2.3.1
+%define unmangled_version 2.3.1
 %define release 1
 
 Summary: blogger.com client written in Python and GTK+ 3
@@ -57,6 +57,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/simpleblogger
 
 %changelog
+* Fri Jun 24 2016 Yauhen Shulitski <jsnjack@gmail.com> 2.3.1-1
+- Style headerbar entry for gnome 3.20
 * Sun Mar 6 2016 Yauhen Shulitski <jsnjack@gmail.com> 2.3-1
 - Make insert code dialog scrollable
 - Make preview dialog a window
