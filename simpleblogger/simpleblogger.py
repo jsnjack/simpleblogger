@@ -6,7 +6,7 @@ import sys
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('GtkSource', '3.0')
-from gi.repository import Gtk, Gio, GtkSource, GdkPixbuf
+from gi.repository import Gtk, Gio, GtkSource, GdkPixbuf, Gdk
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import guess_lexer, get_lexer_by_name
@@ -54,6 +54,7 @@ class SBWindow(Gtk.ApplicationWindow):
         self.title_entry.props.hexpand = True
         self.title_entry.props.vexpand = True
         self.title_entry.props.width_chars = 50
+        self.title_entry.set_name("headerbar_entry")
         title_entry_style = self.title_entry.get_style_context()
         title_entry_style.add_class("title")
         title_entry_style.remove_class("entry")
@@ -157,9 +158,24 @@ class SBWindow(Gtk.ApplicationWindow):
         main_box.pack_start(self.infobar, False, False, 0)
         main_box.pack_end(self.sourceview, True, True, 0)
 
+        self.apply_styles()
+
         self.add(scrolled_window)
         if self.app.config["active_blog"]:
             self.app.activate_blog(self.app.config["active_blog"])
+
+    def apply_styles(self):
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_path(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), "styles.css")
+        )
+        screen = Gdk.Screen.get_default()
+        style_context = Gtk.StyleContext()
+        style_context.add_provider_for_screen(
+            screen,
+            css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
 
     def new_post(self):
         """
