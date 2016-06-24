@@ -2,6 +2,8 @@
 setup.py
 simpleblogger/__init__.py
 simpleblogger/simpleblogger.py
+simpleblogger/storage.py
+simpleblogger/styles.css
 simpleblogger/utils.py
 simpleblogger/application/simpleblogger
 simpleblogger/application/simpleblogger.desktop

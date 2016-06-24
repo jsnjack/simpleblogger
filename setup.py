@@ -21,7 +21,8 @@ setup(
             "application/simpleblogger.png",
             "application/simpleblogger.desktop",
             "application/simpleblogger",
-            "providers/client_secret.json"
+            "providers/client_secret.json",
+            "styles.css"
         ],
     }
 )
