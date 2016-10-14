@@ -108,6 +108,14 @@ class SBWindow(Gtk.ApplicationWindow):
         menu_button.add(image)
         header_bar.pack_end(menu_button)
 
+        preview_button = Gtk.Button()
+        preview_button.set_tooltip_text("Preview")
+        preview_button.connect("clicked", self.on_preview_button_clicked)
+        icon = Gio.ThemedIcon(name="system-search-symbolic")
+        image = Gtk.Image.new_from_gicon(icon, Gtk.IconSize.BUTTON)
+        preview_button.add(image)
+        header_bar.pack_end(preview_button)
+
         menumodel = Gio.Menu()
         post_menu_section = Gio.Menu()
         post_menu_section.append("New", "app.new")
@@ -226,6 +234,12 @@ class SBWindow(Gtk.ApplicationWindow):
             # Hide New button
             self.infobar.get_action_area().get_children()[1].props.visible = False
             self.infobar.show()
+
+    def on_preview_button_clicked(self, target):
+        """
+        Open preview window
+        """
+        PreviewWindow(self)
 
     def on_tag_popover_hide(self, target, tag_button):
         """
