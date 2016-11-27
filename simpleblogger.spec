@@ -1,6 +1,6 @@
 %define name simpleblogger
-%define version 2.4.0
-%define unmangled_version 2.4.0
+%define version 2.4.1
+%define unmangled_version 2.4.1
 %define release 1
 
 Summary: blogger.com client written in Python and GTK+ 3
@@ -24,7 +24,7 @@ Requires: gobject-introspection >= 1.42.0
 Requires: pygobject3 >= 3.14.0
 Requires: python-pip >= 6.0
 Requires: python-pygments >= 1.6
-Requires: python-keyring >= 5.0
+Requires: python-keyring >= 8.0
 Requires: python-gdata >= 2.0.18
 Requires: webkitgtk4
 
@@ -48,6 +48,7 @@ desktop-file-install %{buildroot}/usr/lib/python2.7/site-packages/simpleblogger/
 %post
 xdg-icon-resource install --novendor --size 128 /usr/lib/python2.7/site-packages/simpleblogger/application/%{name}.png
 pip install google-api-python-client>=1.4.0
+pip install keyrings.alt
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -58,6 +59,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/simpleblogger
 
 %changelog
+* Sun Nov 27 2016 Yauhen Shulitski <jsnjack@gmail.com> 2.4.1-1
+- Update keyrings package
 * Fri Oct 14 2016 Yauhen Shulitski <jsnjack@gmail.com> 2.4.0-1
 - Add preview button to the headerbar
 * Fri Jun 24 2016 Yauhen Shulitski <jsnjack@gmail.com> 2.3.1-1

@@ -1,7 +1,7 @@
 import keyring
 import threading
 
-from keyring.backends.file import EncryptedKeyring
+from keyrings.alt.file import EncryptedKeyring
 from oauth2client.client import Credentials
 from oauth2client.client import Storage as BaseStorage
 
